@@ -1,5 +1,5 @@
 import { InsertOneResult } from "mongodb"
-import { NextApiRequest, NextApiResponse } from "next"
+import { NextApiResponse } from "next"
 import ErrorResponse from "./ErrorResponse"
 import StatusResponse from "./StatusResponse"
 

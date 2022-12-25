@@ -6,11 +6,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.query.id) {
       // id was specified in the query string
       const trip = await getTripById(req.query.id.toString());
-      res.status(200).json({ trip });
+      res.status(200).json(trip);
     } else {
       // id was not specified in the query string
-      const allTrips = await getTrips()
-      res.status(200).json({ trips: allTrips });
+      const trips = await getTrips()
+      res.status(200).json(trips);
     }
   } catch (error) {
     console.error(error);

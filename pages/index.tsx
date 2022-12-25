@@ -5,6 +5,7 @@ import styles from './index.module.scss'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextPageContext } from 'next'
 import { useTranslation } from 'next-i18next'
+import SearchForm from '../components/search-form'
 export default function Home(props) {
   const { t } = useTranslation('common')
   console.log(props)
@@ -23,6 +24,7 @@ export default function Home(props) {
         <div className="hero-body">
           <div className="container">
             <h1 className="title is-1 is-uppercase has-text-centered">{t('title')}</h1>
+            <SearchForm />
           </div>
         </div>
         <div className="hero-foot">

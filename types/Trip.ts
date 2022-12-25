@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 type Feature = 'WC' | 'e-ticket' | 'instant-confirmation' | 'no-refund'
 
 type TripPoint = {
@@ -6,7 +8,8 @@ type TripPoint = {
   coordinates: { lat: number, long: number }
 }
 
-type TripDetails = {
+type Trip = {
+  _id: string | ObjectId;
   points: TripPoint[]
   dateStart: Date | string;
   dateEnd: Date | string;
@@ -15,4 +18,4 @@ type TripDetails = {
   features: Feature[]
 }
 
-export default TripDetails
+export default Trip

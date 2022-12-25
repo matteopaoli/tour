@@ -1,12 +1,10 @@
-import { WithId } from "mongodb"
 import { GetServerSideProps, GetServerSidePropsResult, NextPageContext } from "next"
 import Head from "next/head"
-import Image from "next/image"
 import { getTripById } from "../../lib/utils"
-import { TripDetails } from "../../types"
+import { Trip } from "../../types"
 
 type TripPageProps = {
-  trip: TripDetails & { _id: string }
+  trip: Trip
 }
 
 const TripPage = ({ trip }: TripPageProps): JSX.Element => {
@@ -35,6 +33,7 @@ const TripPage = ({ trip }: TripPageProps): JSX.Element => {
                   {trip.points.map(x => x.name).join(' - ')}
                 </p>
                 <p>Departure: {new Date(trip.dateStart).toLocaleString()}</p>
+                <button>Book this ticket</button>
               </div>
             </div>
           </div>
@@ -64,16 +63,8 @@ export const getServerSideProps= async (context: NextPageContext): Promise<GetSe
     return {
       notFound: true,
     }
-    // else return {
-    //   redirect: {
-    //     statusCode: 404,
-    //     permanent: false,
-    //   }
-    // }
   }
-  // else return {
-  //   redirect: {
-  //     path: '/',
-  //   }
-  // }
+  return {
+    notFound: true,
+  }
 }
