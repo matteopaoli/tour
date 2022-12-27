@@ -7,7 +7,7 @@ export const connect = async (): Promise<Db | undefined> => {
 
   const dbUri = process.env.MONGODB_URI
   if (dbUri) {
-    const client = new MongoClient(dbUri, { useNewUrlParser: true, useUnifiedTopology: true });
+    const client = new MongoClient(dbUri);
     await client.connect();
     db = client.db('main');
     return db;
