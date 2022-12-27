@@ -6,9 +6,9 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextPageContext } from 'next'
 import { useTranslation } from 'next-i18next'
 import SearchForm from '../components/search-form'
-export default function Home(props) {
+
+export default function Home() {
   const { t } = useTranslation('common')
-  console.log(props)
   return (
     <>
       <Head>
