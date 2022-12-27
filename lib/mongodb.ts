@@ -2,7 +2,7 @@ import { MongoClient, Db } from 'mongodb';
 
 let db: Db;
 
-export async function connect(): Promise<Db> {
+export const connect = async (): Promise<Db | undefined> => {
   if (db) return db;
 
   const dbUri = process.env.MONGODB_URI
@@ -12,6 +12,8 @@ export async function connect(): Promise<Db> {
     db = client.db('main');
     return db;
   }
+  
+  return undefined
 }
 
 export function getDb(): Db {
