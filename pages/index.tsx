@@ -1,11 +1,9 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import styles from './index.module.scss'
-
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { NextPageContext } from 'next'
-import { useTranslation } from 'next-i18next'
 import SearchForm from '../components/search-form'
+
+import { NextPageContext } from 'next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'next-i18next'
 
 export default function Home() {
   const { t } = useTranslation('common')
@@ -36,10 +34,9 @@ export default function Home() {
 }
 
 export async function getStaticProps({ locale }: NextPageContext) {
-  console.log('locale', locale)
   return {
     props: {
-      ...(await serverSideTranslations(locale as string, ['common'])),
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
     },
   }
 }

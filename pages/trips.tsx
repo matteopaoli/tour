@@ -1,10 +1,10 @@
 import { GetServerSidePropsResult, NextPageContext } from "next"
 import Head from "next/head"
 import { Trip } from '../types'
-import { getTrips } from "../lib/utils"
 import SearchResults from "../components/search-results"
+import { searchTrips } from "./api/search"
 
-type TripPageProps = {
+interface TripPageProps {
   trips: Trip[]
 }
 
@@ -28,15 +28,13 @@ const TripPage = ({ trips }: TripPageProps): JSX.Element => {
 
 export default TripPage
 
-export const getServerSideProps= async (context: NextPageContext): Promise<GetServerSidePropsResult<TripPageProps>> => {
+export const getServerSideProps = async (context: NextPageContext): Promise<GetServerSidePropsResult<TripPageProps>> => {
   const { departure, destination } = context.query
-  console.log('departure', departure)
-  console.log('destination', destination)
 
   if (departure && destination) {
-    let trips = await getTrips(departure.toString(), destination.toString())
-    trips = JSON.parse(JSON.stringify(trips))
-    if (trips) {
+    let trips = await searchTrips(departure.toString(), destination.toString())
+    trips = JSON.parse(JSON.stringify(trips)) as Trip[]
+    if (trips.length > 0) {
       return {
         props: {
           trips

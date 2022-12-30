@@ -1,25 +1,25 @@
-import { useRouter } from 'next/router';
-import React, { useState } from 'react';
-import styles from './search-form.module.scss';
+import React, { useState } from 'react'
+import { useRouter } from 'next/router'
+import styles from './search-form.module.scss'
 
 const SearchForm = () => {
-  const [departure, setDeparture] = useState<string>('');
-  const [destination, setDestination] = useState<string>('');
-  const router = useRouter();
+  const [departure, setDeparture] = useState<string>('')
+  const [destination, setDestination] = useState<string>('')
+  const router = useRouter()
 
   const handleDepartureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDeparture(event.target.value);
-  };
+    setDeparture(event.target.value)
+  }
 
   const handleDestinationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDestination(event.target.value);
-  };
+    setDestination(event.target.value)
+  }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault()
     // Perform search here
-    router.push(`/trips?departure=${departure}&destination=${destination}`)
-  };
+    void router.push(`/trips?departure=${departure}&destination=${destination}`)
+  }
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
@@ -33,7 +33,7 @@ const SearchForm = () => {
       </label>
       <button type="submit" className="button is-primary is-fullwidth">Search</button>
     </form>
-  );
-};
+  )
+}
 
-export default SearchForm;
+export default SearchForm

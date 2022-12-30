@@ -6,7 +6,6 @@ const { i18n } = require('./next-i18next.config')
  **/
 const nextConfig = {
   reactStrictMode: true,
-  locales: ['en', 'th'],
   i18n,
   images: {
     remotePatterns: [

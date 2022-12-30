@@ -1,9 +1,9 @@
-import { GetServerSideProps, GetServerSidePropsResult, NextPageContext } from "next"
+import { GetServerSidePropsResult, NextPageContext } from "next"
 import Head from "next/head"
-import { getTripById } from "../../lib/utils"
 import { Trip } from "../../types"
+import { getTripById } from "../api/trip"
 
-type TripPageProps = {
+interface TripPageProps {
   trip: Trip
 }
 
@@ -51,8 +51,7 @@ export default TripPage
 export const getServerSideProps= async (context: NextPageContext): Promise<GetServerSidePropsResult<TripPageProps>> => {
   if (context.query.id) {
     let trip = await getTripById(context.query.id as string)
-    trip = JSON.parse(JSON.stringify(trip))
-    console.log(trip)
+    trip = JSON.parse(JSON.stringify(trip)) as Trip
     if (trip) {
       return {
         props: {

@@ -1,7 +1,7 @@
 import { Trip } from "../types"
 import SearchResult from "./search-result"
 
-type SearchResultProps = {
+interface SearchResultProps {
   trips: Trip[]
 }
 
