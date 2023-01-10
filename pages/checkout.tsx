@@ -1,28 +1,25 @@
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import Image from 'next/image';
-import React, { useState } from 'react';
-import Input from '../components/input';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next'
+import Image from 'next/image'
+import React, { FormEvent, useState } from 'react'
+import Input from '../components/input'
 import img from '../public/sample.png'
-import { Trip } from '../types';
-import { getTripById } from './api/trip';
+import { Trip } from '../types'
+import { getTripById } from './api/trip'
 
-type CheckoutProps = {
+interface CheckoutProps {
   trip: Trip
 }
 
 const Checkout = ({ trip }: CheckoutProps) => {
   // Declare state variables and set their initial values
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [dob, setDob] = useState('');
-  const [passportNumber, setPassportNumber] = useState('');
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [dob, setDob] = useState('')
+  const [passportNumber, setPassportNumber] = useState('')
 
-  const handleSubmit = (event) => {
-    // Prevent the form from refreshing the page on submit
-    event.preventDefault();
-
-    // Perform validation or submit the form data to the server here
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
   }
 
   return (
@@ -55,7 +52,7 @@ const Checkout = ({ trip }: CheckoutProps) => {
         <p>Price: {trip.price}</p>
       </div>
     </div>
-  );
+  )
 }
 
 export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
@@ -68,7 +65,8 @@ export const getServerSideProps: GetServerSideProps = async (context: GetServerS
     }
   }
 
-  const trip = JSON.parse(JSON.stringify((await getTripById(context.query.id.toString()))))
+  const data = await getTripById(context.query.id.toString())
+  const trip: Trip = JSON.parse(JSON.stringify(data)) as Trip
 
   return {
     props: {

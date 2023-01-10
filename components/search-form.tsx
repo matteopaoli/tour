@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Select from 'react-select'
 
-type Option = {
-  label: string
+interface Option {
+  label: string,
   value: string
 }
 
@@ -18,7 +18,9 @@ const SearchForm = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    void router.push(`/trips?departure=${departureSelection?.value}&destination=${destinationSelection?.value}`)
+    if (departureSelection?.value && destinationSelection?.value) {
+      void router.push(`/trips?departure=${departureSelection.value}&destination=${destinationSelection.value}`)
+    }
   }
 
   // const loadDepartureOptions = async (inputValue: string, callback) => {
@@ -31,32 +33,24 @@ const SearchForm = () => {
     fetch(url)
       .then((response) => response.json())
       .then((data: string[]) => {
-        console.log(data);
-        const options: Option[] = data && data.map((suggestion) => ({ label: suggestion, value: suggestion }))
+        const options: Option[] = data.map((suggestion) => ({ label: suggestion, value: suggestion }))
         setDepartureSuggestions(options)
     })
+    .catch((err: string) => new Error(err))
   }, [departureInputValue])
 
   useEffect(() => {
-    const url = `/api/location/autocomplete?from=${departureSelection?.value}${destinationInputValue? `&location=${destinationInputValue}` : ''}`
-    fetch(url)
-      .then((response) => response.json())
-      .then((data: string[]) => {
-        const options: Option[] = data.map((suggestion) => ({ label: suggestion, value: suggestion }))
-        setDestinationSuggestions(options)
-    })
+    if (departureSelection?.value) {
+      const url = `/api/location/autocomplete?from=${departureSelection.value}${destinationInputValue? `&location=${destinationInputValue}` : ''}`
+      fetch(url)
+        .then((response) => response.json())
+        .then((data: string[]) => {
+          const options: Option[] = data.map((suggestion) => ({ label: suggestion, value: suggestion }))
+          setDestinationSuggestions(options)
+        })
+        .catch((err: string) => new Error(err))
+    }
   }, [destinationInputValue, departureInputValue, departureSelection])
-
-  // const loadDestinationOptions = (inputValue: string): Promise<Option[]> => {
-  //   return fetch(`/api/location/autocomplete?location=${inputValue}&from=${departure}`)
-  //     .then((response) => response.json())
-  //     .then((json) => {
-  //       return json.map((suggestion: string) => ({
-  //         value: suggestion,
-  //         label: suggestion,
-  //       }));
-  //   });
-  // }
 
   return (
     <form onSubmit={handleSubmit}>
