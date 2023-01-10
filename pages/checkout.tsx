@@ -48,7 +48,6 @@ const Checkout = ({ trip }: CheckoutProps) => {
         <h2 className="is-size-2 has-text-centered">Your details</h2>
         <Image className='image mx-auto' src={img} alt="sample image" />
         <p>From <strong>{trip.points[0].name}</strong> to <strong>{trip.points[1].name}</strong></p>
-        <p>Your bus will depart at {trip.points[0].time} at {trip.points[0].name}</p>
         <p>Price: {trip.price}</p>
       </div>
     </div>
