@@ -32,14 +32,13 @@ export const getServerSideProps = async (context: NextPageContext): Promise<GetS
   const { departure, destination } = context.query
 
   if (departure && destination) {
-    let trips = await searchTrips(departure.toString(), destination.toString())
-    trips = JSON.parse(JSON.stringify(trips)) as Trip[]
+    const trips = JSON.parse(JSON.stringify((await searchTrips(departure.toString(), destination.toString())))) as Trip[]
     if (trips.length > 0) {
       return {
         props: {
           trips
         }
-      }
+      }       
     }
     return {
       notFound: true,

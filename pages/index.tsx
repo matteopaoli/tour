@@ -15,20 +15,20 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <section className="hero is-primary is-fullheight">
-        <div className="hero-head">
-          header
-        </div>
-        <div className="hero-body">
-          <div className="container">
-            <h1 className="title is-1 is-uppercase has-text-centered">{t('title')}</h1>
-            <SearchForm />
+        <section className="hero is-primary is-fullheight ">
+          <div className="hero-head">
+            header
           </div>
-        </div>
-        <div className="hero-foot">
-          footer
-        </div>
-      </section>
+          <div className="hero-body">
+            <div className="container">
+              <h1 className="title is-1 is-uppercase has-text-centered">{t('title')}</h1>
+              <SearchForm />
+            </div>
+          </div>
+          <div className="hero-foot">
+            footer
+          </div>
+        </section>
     </>
   )
 }

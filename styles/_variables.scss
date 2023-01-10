@@ -16,7 +16,7 @@ $white:        hsl(0, 0%, 100%);
 
 $orange:       hsl(14,  100%, 53%);
 $yellow:       hsl(44,  100%, 77%);
-$green:        hsl(153, 53%,  53%);
+$green:        #069A8E;
 $turquoise:    hsl(171, 100%, 41%);
 $cyan:         hsl(207, 61%,  53%);
 $blue:         hsl(229, 53%,  53%);
@@ -24,7 +24,7 @@ $purple:       hsl(271, 100%, 71%);
 $red:          hsl(348, 86%, 61%);
 
 // Typography
-$family-sans-serif: 'Times New Roman', BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+$family-sans-serif: "Nunito", sans-serif;
 $family-monospace: monospace;
 $render-mode: optimizeLegibility;
 
