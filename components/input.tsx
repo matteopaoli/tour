@@ -4,7 +4,7 @@ interface InputProps {
   value: string,
   label: string,
   onChange?: (value: string) => void,
-  type?: 'text' | 'password',
+  type?: 'text' | 'password' | 'date',
   placeholder?: string,
   help?: string,
   onFocus?: () => void,
@@ -12,11 +12,12 @@ interface InputProps {
   onKeyUp?: () => void,
   onKeyDown?: () => void,
   isLoading?: boolean,
+  horizontal?: boolean,
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(({ value, label, onChange, type, placeholder, help, onFocus, onBlur, onKeyDown, onKeyUp, isLoading }, ref): JSX.Element => {
+const Input = forwardRef<HTMLInputElement, InputProps>(({ value, label, onChange, type, placeholder, help, onFocus, onBlur, onKeyDown, onKeyUp, isLoading, horizontal }, ref): JSX.Element => {
   return (
-    <div className="field">
+    <div className={`field ${horizontal ? 'is-horizontal' : ''}`}>
       <label className="label">{label}:</label>
       <div className={`control is-expanded${isLoading? ' is-loading': ''}`}>
         <input 

@@ -4,6 +4,7 @@ import SearchForm from '../components/search-form'
 import { NextPageContext } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
+import styles from './index.module.scss'
 
 export default function Home() {
   const { t } = useTranslation('common')
@@ -15,7 +16,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-        <section className="hero is-primary is-fullheight ">
+        <section className={`hero is-primary is-fullheight ${styles.hero}`}>
           <div className="hero-head">
             header
           </div>

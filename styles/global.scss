@@ -1,25 +1,5 @@
 @charset "utf-8";
 @import url('https://fonts.googleapis.com/css?family=Nunito:400,700');
 @import './variables';
-
-// Set your brand colors
-// $pink: #FA7C91;
-// $brown: #757763;
-// $beige-light: #D0D1CD;
-// $beige-lighter: #EFF0EB;
-
-// Update Bulma's global variables
-// $grey-dark: $brown;
-// $grey-light: $beige-light;
-// $primary: $green;
-// $link: $pink;
-
-// Update some of Bulma's component variables
-// $body-background-color: $beige-lighter;
-// $control-border-width: 2px;
-// $input-border-color: transparent;
-// $input-shadow: none;
-
-// Import only what you need from Bulma
 @import "~bulma/bulma.sass";
 
