@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Select from 'react-select'
-import Input from './input'
 import DatePicker from 'react-datepicker'
 import styles from './search-form.module.scss'
 
-import "react-datepicker/dist/react-datepicker.css";
+import "react-datepicker/dist/react-datepicker.css"
 
 interface Option {
   label: string,
