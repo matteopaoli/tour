@@ -20,13 +20,14 @@ const SearchForm = () => {
   const [destinationSuggestions, setDestinationSuggestions] = useState<Option[]>([])
   const [departureDate, setDepartureDate] = useState<Date | null>(new Date)
   const [returnDate, setReturnDate] = useState<Date | null>(new Date(Date.now() + 24 * 60 * 60 * 1000))
+  const [isReturnTrip, setIsReturnTrip] = useState<boolean>(false)
 
   const router = useRouter()
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (departureSelection?.value && destinationSelection?.value) {
-      void router.push(`/trips?departure=${departureSelection.value}&destination=${destinationSelection.value}`)
+    if (departureSelection?.value && destinationSelection?.value && departureDate) {
+      void router.push(`/trips?departure=${departureSelection.value}&destination=${destinationSelection.value}&departureDate=${departureDate.toISOString()}`)
     }
   }
 
@@ -84,12 +85,12 @@ const SearchForm = () => {
         <div className="column">
           <DatePicker wrapperClassName={styles.datepicker} selected={departureDate} onChange={value => setDepartureDate(value)} />
         </div>
-        <div className="column">
-          <DatePicker wrapperClassName={styles.datepicker} selected={returnDate} onChange={value => setReturnDate(value)} />
-        </div>
-        <div className="column">
-          <DatePicker wrapperClassName={styles.datepicker} selected={returnDate} onChange={value => setReturnDate(value)} />
-        </div>
+        {isReturnTrip && (
+          <div className="column">
+            <DatePicker wrapperClassName={styles.datepicker} selected={returnDate} onChange={value => setReturnDate(value)} />
+          </div>
+        )}
+
       </div>
       <button type="submit" className="button is-primary is-fullwidth">Search</button>
     </form>

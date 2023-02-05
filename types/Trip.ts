@@ -16,6 +16,7 @@ type Trip = {
   operator: string;
   price: number
   features: Feature[]
+  seatsAvailable: number
 }
 
 export default Trip

@@ -17,7 +17,7 @@ const TripPage = ({ trips }: TripPageProps): JSX.Element => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="hero-body">
+      <div className="hero-body has-background-primary">
         <div className="container">
           <SearchResults trips={trips} />
         </div>
@@ -29,22 +29,18 @@ const TripPage = ({ trips }: TripPageProps): JSX.Element => {
 export default TripPage
 
 export const getServerSideProps = async (context: NextPageContext): Promise<GetServerSidePropsResult<TripPageProps>> => {
-  const { departure, destination } = context.query
+  const { departure, destination, departureDate } = context.query
 
-  if (departure && destination) {
-    const trips = JSON.parse(JSON.stringify((await searchTrips(departure.toString(), destination.toString())))) as Trip[]
-    if (trips.length > 0) {
-      return {
-        props: {
-          trips
-        }
-      }       
-    }
+  if (departure && destination && departureDate) {
+    const trips = JSON.parse(JSON.stringify((await searchTrips(departure.toString(), destination.toString(), departureDate.toString())))) as Trip[]
     return {
-      notFound: true,
-    }
+      props: {
+        trips
+      }
+    }     
   }
   return {
-    notFound: true,
+    notFound: true
   }
+
 }

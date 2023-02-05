@@ -10,7 +10,7 @@ interface SearchResultProps {
 const SearchResult = ({ trip }: SearchResultProps): JSX.Element => {
 
   return (
-    <div className="box columns is-vcentered">
+    <div className="box columns is-vcentered my-5">
       <div className="column is-2">
         <Image className="image is-96x96" src={mockImage} alt="sample image" />
       </div>
