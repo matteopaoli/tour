@@ -3,12 +3,14 @@ import Head from "next/head"
 import { Trip } from '../types'
 import SearchResults from "../components/search-results"
 import { searchTrips } from "./api/search"
+import { useRouter } from "next/router"
 
 interface TripPageProps {
   trips: Trip[]
 }
 
 const TripPage = ({ trips }: TripPageProps): JSX.Element => {
+  const { query } = useRouter()
   return (
     <>
       <Head>
@@ -17,8 +19,9 @@ const TripPage = ({ trips }: TripPageProps): JSX.Element => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="hero-body has-background-primary">
+      <div className="has-background-primary is-full-height">
         <div className="container">
+          <h2 className="is-size-2 has-text-white">Your trips from <b>{query.departure}</b> to <b>{query.destination}</b></h2>
           <SearchResults trips={trips} />
         </div>
       </div>

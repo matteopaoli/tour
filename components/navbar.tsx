@@ -1,11 +1,12 @@
+import Link from "next/link"
+
 const Navbar = (): JSX.Element => {
   return (
     <nav className="navbar is-fixed-top" role="navigation" aria-label="main navigation">
       <div className="navbar-brand">
-        <a className="navbar-item" href="https://bulma.io">
-          <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28" />
-        </a>
-
+        <Link href='/' className="navbar-item">
+          <h1 className="has-text-weight-bold is-size-4">BUS TICKETS</h1>
+        </Link>
         <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
