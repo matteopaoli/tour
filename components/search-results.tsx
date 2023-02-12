@@ -6,7 +6,7 @@ interface SearchResultProps {
 }
 
 const SearchResults = ({ trips }: SearchResultProps) => (
-  <div className="search-results">
+  <div className="search-results p-4">
     {trips.map((trip) => (
       <SearchResult key={trip._id.toString()} trip={trip} />
     ))}

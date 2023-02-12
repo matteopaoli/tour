@@ -4,6 +4,7 @@ import { Trip } from '../types'
 import SearchResults from "../components/search-results"
 import { searchTrips } from "./api/search"
 import { useRouter } from "next/router"
+import SearchForm from "../components/search-form/search-form"
 
 interface TripPageProps {
   trips: Trip[]
@@ -20,7 +21,8 @@ const TripPage = ({ trips }: TripPageProps): JSX.Element => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="has-background-primary is-full-height">
-        <div className="container">
+        <SearchForm singleLine />
+        <div className="container p-4">
           <h2 className="is-size-2 has-text-white">Your trips from <b>{query.departure}</b> to <b>{query.destination}</b></h2>
           <SearchResults trips={trips} />
         </div>

@@ -24,7 +24,7 @@ const Checkout = ({ trip }: CheckoutProps) => {
 
   return (
     <div className="columns mt-2">
-      <form className="column is-8 control" onSubmit={handleSubmit}>
+      <form className="box column is-8 control" onSubmit={handleSubmit}>
         <div className="columns is-multiline">
           <div className="column is-half">
             <Input value={firstName} label="First Name" onChange={setFirstName} />
@@ -44,7 +44,7 @@ const Checkout = ({ trip }: CheckoutProps) => {
         </div>
         <input className='button is-primary' type="submit" value="Submit" />
       </form>
-      <div className="column is-4">
+      <div className="box column is-4">
         <h2 className="is-size-2 has-text-centered">Your details</h2>
         <Image className='image mx-auto' src={img} alt="sample image" />
         <p>From <strong>{trip.points[0].name}</strong> to <strong>{trip.points[1].name}</strong></p>

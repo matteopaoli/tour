@@ -2,13 +2,13 @@ import { ObjectId } from "mongodb";
 
 type Feature = 'WC' | 'e-ticket' | 'instant-confirmation' | 'no-refund'
 
-type TripPoint = {
+interface TripPoint {
   name: string;
   time: Date
   coordinates: { lat: number, long: number }
 }
 
-type Trip = {
+export default interface Trip {
   _id: string | ObjectId;
   points: TripPoint[]
   dateStart: Date | string;
@@ -18,5 +18,3 @@ type Trip = {
   features: Feature[]
   seatsAvailable: number
 }
-
-export default Trip

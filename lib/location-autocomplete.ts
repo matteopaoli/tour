@@ -1,5 +1,7 @@
-const locationAutocomplate = (value: string, origin?: string): Promise<{ label: string, value: string }[]> => {
-  const url = `/api/location/autocomplete?from=${value}${origin? `&location=${origin}` : ''}`
+import { LocationOption } from "../types"
+
+const locationAutocomplate = (value: string, origin?: string): Promise<LocationOption[]> => {
+  const url = `/api/location/autocomplete?location=${value}${origin? `&from=${origin}` : ''}`
   return fetch(url)
     .then((response) => response.json())
     .then((data: string[]) => {

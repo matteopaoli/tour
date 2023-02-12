@@ -1,13 +1,15 @@
-import Trip from "./Trip";
-import ErrorResponse from "./ErrorResponse";
-import APIResponse from "./APIResponse";
-import StatusResponse from "./StatusResponse";
-import Search from "./Search";
+import Trip from "./trip"
+import ErrorResponse from "./error-response"
+import APIResponse from "./api-response"
+import StatusResponse from "./status-response"
+import Search from "./search"
+import LocationOption from "./location-option"
 
 export type {
-  Trip,
-  ErrorResponse,
   APIResponse,
+  ErrorResponse,
+  LocationOption,
+  Search,
   StatusResponse,
-  Search
+  Trip
 }

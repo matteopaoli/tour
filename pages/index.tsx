@@ -1,13 +1,11 @@
 import Head from 'next/head'
-import SearchForm from '../components/search-form'
+import SearchForm from '../components/search-form/search-form'
 
 import { NextPageContext } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { useTranslation } from 'next-i18next'
 import styles from './index.module.scss'
 
 export default function Home() {
-  const { t } = useTranslation('common')
   return (
     <>
       <Head>
@@ -17,17 +15,18 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
         <section className={`hero is-primary is-fullheight-with-navbar ${styles.hero}`}>
-          <div className="hero-head">
-            header
-          </div>
           <div className="hero-body">
             <div className="container">
-              <h1 className="title is-1 is-uppercase has-text-centered">{t('title')}</h1>
+              <h1 className="title is-size-2 is-uppercase">Bus tickets to everywhere in Thailand</h1>
               <SearchForm />
             </div>
           </div>
-          <div className="hero-foot">
-            footer
+        </section>
+        <section className={`hero is-primary is-fullheight-with-navbar`}>
+          <div className="hero-body">
+            <div className="container">
+              <h1 className="title is-size-2 is-uppercase has-text-centered">This website is still under construction</h1>
+            </div>
           </div>
         </section>
     </>
