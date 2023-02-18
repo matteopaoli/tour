@@ -1,7 +1,6 @@
-import { useContext, useMemo } from "react"
+import { useMemo } from "react"
 import customStyle from "../../lib/react-select-style"
 import Select from 'react-select'
-import useSearch from "../../hooks/useSubmitSearch"
 import useSearchStore from "../../stores/search.store"
 
 export default function ReturnDropdown() {

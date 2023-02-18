@@ -35,7 +35,7 @@ export default function SearchFormOneLine() {
       <div className="column is-1">
       <DatePicker wrapperClassName={styles.datepicker} selected={new Date(searchStore.departureDate)} onChange={value => value && searchStore.setDepartureDate(value)} />
       </div>
-      <When condition={searchStore.return}>
+      <When condition={searchStore.isReturn}>
         <div className="column is-1">
         <DatePicker wrapperClassName={styles.datepicker} selected={new Date(searchStore.returnDate)} onChange={value => value && searchStore.setReturnDate(value)} />
         </div>
