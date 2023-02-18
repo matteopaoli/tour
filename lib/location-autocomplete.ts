@@ -1,6 +1,6 @@
 import { LocationOption } from "../types"
 
-const locationAutocomplate = (value: string, origin?: string): Promise<LocationOption[]> => {
+const locationAutocomplete = (value: string, origin?: string): Promise<LocationOption[]> => {
   const url = `/api/location/autocomplete?location=${value}${origin? `&from=${origin}` : ''}`
   return fetch(url)
     .then((response) => response.json())
@@ -11,4 +11,4 @@ const locationAutocomplate = (value: string, origin?: string): Promise<LocationO
     .catch((err: string) => { throw new Error(err) })
 }
 
-export default locationAutocomplate
+export default locationAutocomplete

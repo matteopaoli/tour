@@ -4,4 +4,5 @@ export default interface Search {
   departureDate: string
   returnDate: string
   passengers: number
+  isReturn: boolean
 }

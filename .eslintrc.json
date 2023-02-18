@@ -14,6 +14,7 @@
   "rules": {
     "semi": ["error", "never"],
     "consistent-return": "error",
-    "no-console": "error"
+    "no-console": "error",
+    "@typescript-eslint/no-unsafe-return": "off"
   }
 }
