@@ -43,7 +43,8 @@
     "mongodb": "^4.13.0",
     "mongoose": "^6.8.1",
     "node-mocks-http": "^1.12.1",
-    "sass": "^1.57.1"
+    "sass": "^1.57.1",
+    "simple-zustand-devtools": "^1.1.0"
   },
   "packageManager": "yarn@3.3.1"
 }

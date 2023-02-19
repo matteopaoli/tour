@@ -8,9 +8,9 @@ export default function useSubmitSearch(): (e: FormEvent<HTMLFormElement>) => vo
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const { from, to, departureDate } = search
+    const { from, to, departureDate, returnDate, isReturn } = search
     if ([from, to, departureDate].every(Boolean)) {
-      const qs = new URLSearchParams({ departure: from,destination: to,departureDate }).toString()
+      const qs = new URLSearchParams({ departure: from, destination: to, departureDate, returnDate, isReturn: isReturn.toString() }).toString()
       const url = '/trips?' + qs
       void router.push(url)
     }

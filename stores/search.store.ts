@@ -1,6 +1,6 @@
 import { StoreApi, UseBoundStore, create } from 'zustand'
 import { Search } from '../types'
-import { FormEvent } from 'react'
+import { mountStoreDevtool } from 'simple-zustand-devtools'
 
 interface SearchState extends Search {
   setDeparture: (from: string) => void
@@ -23,5 +23,7 @@ const useSearchStore: UseBoundStore<StoreApi<SearchState>> = create<SearchState>
   setReturnDate: (d: Date) => set(() => ({ returnDate: d.toISOString().split('T')[0] })),
   setReturn: (v: boolean) => set(() => ({ isReturn: v }))
 }))
+
+mountStoreDevtool('SearchStore', useSearchStore)
 
 export default useSearchStore

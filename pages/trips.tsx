@@ -1,17 +1,21 @@
 import { GetServerSidePropsResult, NextPageContext } from "next"
 import Head from "next/head"
-import { Trip } from '../types'
+import { SearchResponse } from '../types'
 import SearchResults from "../components/search-results"
-import { searchTrips } from "./api/search"
+import { searchTrips, searchTripsWithReturn } from "./api/search"
 import { useRouter } from "next/router"
 import SearchFormOneLine from "../components/search-form/search-form-one-line"
+import useSearchStore from "../stores/search.store"
+import { If, Then } from "react-if"
+import { useRef } from "react"
 
 interface TripPageProps {
-  trips: Trip[]
+  results: SearchResponse
 }
 
-const TripPage = ({ trips }: TripPageProps): JSX.Element => {
-  const { query } = useRouter()
+const TripPage = ({ results }: TripPageProps): JSX.Element => {
+  const { current: search }  = useRef(useSearchStore())
+  const router = useRouter()
   return (
     <>
       <Head>
@@ -23,8 +27,21 @@ const TripPage = ({ trips }: TripPageProps): JSX.Element => {
       <div className="has-background-primary is-full-height">
         <SearchFormOneLine />
         <div className="container p-4">
-          <h2 className="is-size-2 has-text-white">Your trips from <b>{query.departure}</b> to <b>{query.destination}</b></h2>
-          <SearchResults trips={trips} />
+          <div className="columns">
+            <div className="column is-8 is-offset-2">
+            <If condition={router.query.isReturn === 'true'}>
+              <Then>
+                <h2 className="is-size-2 has-text-weight-bold has-text-white">Here some suggestions for your roundtrip</h2>
+                <h3 className="is-size-4 has-text-white"><b>{search.from}</b> {'->'} <b>{search.to}</b></h3>
+                <h3 className="is-size-4 has-text-white"><b>{search.to}</b> {'<-'} <b>{search.from}</b></h3>
+              </Then>
+            </If>
+              {results.map((result, i) => (
+                <SearchResults key={i} trips={result} />
+              ))}
+            </div>
+            <div className="column is-2"></div>
+          </div>
         </div>
       </div>
     </>
@@ -34,12 +51,23 @@ const TripPage = ({ trips }: TripPageProps): JSX.Element => {
 export default TripPage
 
 export const getServerSideProps = async (context: NextPageContext): Promise<GetServerSidePropsResult<TripPageProps>> => {
-  const { departure, destination, departureDate } = context.query
+  const { departure, destination, departureDate, returnDate, isReturn } = context.query
+  let trips: SearchResponse = []
+  if (isReturn === 'true') {
+    if ([departure, destination, departureDate, returnDate].every(Boolean)) {
+      trips = await searchTripsWithReturn(departure!.toString(), destination!.toString(), departureDate!.toString(), returnDate!.toString())
+      return {
+        props: {
+          results: JSON.parse(JSON.stringify(trips)) as SearchResponse
+        }
+      }  
+    }
+  }
   if (departure && destination && departureDate) {
-    const trips = JSON.parse(JSON.stringify((await searchTrips(departure.toString(), destination.toString(), departureDate.toString())))) as Trip[]
+    trips = await searchTrips(departure.toString(), destination.toString(), departureDate.toString())
     return {
       props: {
-        trips
+        results: JSON.parse(JSON.stringify(trips)) as SearchResponse
       }
     }     
   }

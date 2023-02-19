@@ -1,5 +1,3 @@
-'use client'
-
 import Head from 'next/head'
 import SearchForm from '../components/search-form/search-form'
 
