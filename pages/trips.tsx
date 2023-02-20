@@ -6,8 +6,10 @@ import { searchTrips, searchTripsWithReturn } from "./api/search"
 import { useRouter } from "next/router"
 import SearchFormOneLine from "../components/search-form/search-form-one-line"
 import useSearchStore from "../stores/search.store"
-import { If, Then } from "react-if"
+import { Else, If, Then, When } from "react-if"
 import { useRef } from "react"
+import useCartStore from "../stores/cart.store"
+import CartSidebar from "../components/cart-sidebar"
 
 interface TripPageProps {
   results: SearchResponse
@@ -15,6 +17,8 @@ interface TripPageProps {
 
 const TripPage = ({ results }: TripPageProps): JSX.Element => {
   const { current: search }  = useRef(useSearchStore())
+  const cart = useCartStore()
+
   const router = useRouter()
   return (
     <>
@@ -24,26 +28,32 @@ const TripPage = ({ results }: TripPageProps): JSX.Element => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="has-background-primary is-full-height">
+      <section className="has-background-primary section">
         <SearchFormOneLine />
-        <div className="container p-4">
-          <div className="columns">
-            <div className="column is-8 is-offset-2">
+        <div className="p-4">
+          <div className="columns is-centered">
+            <div className="column is-8">
             <If condition={router.query.isReturn === 'true'}>
               <Then>
                 <h2 className="is-size-2 has-text-weight-bold has-text-white">Here some suggestions for your roundtrip</h2>
                 <h3 className="is-size-4 has-text-white"><b>{search.from}</b> {'->'} <b>{search.to}</b></h3>
                 <h3 className="is-size-4 has-text-white"><b>{search.to}</b> {'<-'} <b>{search.from}</b></h3>
               </Then>
+              <Else>
+              <h2 className="is-size-2 has-text-weight-bold has-text-white">Here some suggestions for your trip</h2>
+              <h3 className="is-size-4 has-text-white"><b>{search.from}</b> {'->'} <b>{search.to}</b></h3>
+              </Else>
             </If>
               {results.map((result, i) => (
                 <SearchResults key={i} trips={result} />
               ))}
             </div>
-            <div className="column is-2"></div>
+            <When condition={cart.items.length > 0}>
+              <CartSidebar withCheckoutButton/>
+            </When>
           </div>
         </div>
-      </div>
+      </section>
     </>
   )
 }

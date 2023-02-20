@@ -1,10 +1,10 @@
 import Image, { StaticImageData } from "next/image"
 import { Trip } from "../types"
 import mockImage from '../public/bus-image.jpg'
-import formatDate from "../lib/format-date"
 import useCartStore from "../stores/cart.store"
 import { useMemo } from "react"
 import checkIcon from '../public/icons/check.svg'
+import getTime from "../lib/get-time"
 
 interface SearchResultProps {
   trip: Trip
@@ -33,17 +33,17 @@ const SearchResult = ({ trip }: SearchResultProps): JSX.Element => {
               <h2 className="title is-5">{trip.points[0].name}</h2>
             </div>
             <div className="column is-3 is-hidden-tablet">
-              <p className="has-text-weight-bold is-half subtitle is-6">{new Date(trip.dateStart).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', 'hour12': false })}</p>
+              <p className="has-text-weight-bold is-half subtitle is-6">{getTime(trip.dateStart)}</p>
             </div>
           </div>
         </div>
         <div className="column is-one-third">
           <div className="columns is-mobile">
               <div className="column is-9">
-                <h2 className="title is-5">{trip.points[0].name}</h2>
+                <h2 className="title is-5">{trip.points[1].name}</h2>
               </div>
               <div className="column is-3 is-hidden-tablet">
-                <p className="has-text-weight-bold is-half subtitle is-6">{new Date(trip.dateEnd).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', 'hour12': false })}</p>
+                <p className="has-text-weight-bold is-half subtitle is-6">{getTime(trip.dateEnd)}</p>
               </div>
             </div>
         </div>
@@ -51,13 +51,13 @@ const SearchResult = ({ trip }: SearchResultProps): JSX.Element => {
           {/* <h2 className="is-5 has-text-right">{trip.price}฿</h2> */}
           <div className="columns is-vcentered is-hidden-mobile">
             <div className="column">
-              <p className="has-text-weight-bold subtitle is-6">{new Date(trip.dateStart).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', 'hour12': false })}</p>
+              <p className="has-text-weight-bold subtitle is-6">{getTime(trip.dateEnd)}</p>
             </div>
             <div className="column">
               <p className="is-one-third has-text-centered">{'->'}</p>
             </div>
             <div className="column">
-              <p className="has-text-weight-bold is-half subtitle is-6">{new Date(trip.dateEnd).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', 'hour12': false })}</p>
+              <p className="has-text-weight-bold is-half subtitle is-6">{getTime(trip.dateEnd)}</p>
             </div>
           </div>
           <div className="button is-primary is-2 has-text-weight-bold is-fullwidth" onClick={onButtonClick}>{isSelected? <Image src={checkIcon as StaticImageData} alt="icon" />: 'Select this ticket'}</div>

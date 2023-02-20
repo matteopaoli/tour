@@ -15,24 +15,24 @@ export default function SearchFormOneLine() {
  return (
   <form onSubmit={submit} className="box">
     <div className='columns'>
-      <div className="column is-1">
+      <div className="column is-2">
         <ReturnDropdown />
       </div>
-      <div className="column is-2">
+      <div className="column is-3">
         <LocationInput
           fetcher={locationAutocomplete}
           value={searchStore.from}
           onChange={(l) => searchStore.setDeparture(l.value)}
         />
       </div>
-      <div className="column is-2">
+      <div className="column is-3">
         <LocationInput
           value={searchStore.to}
           fetcher={(v) => locationAutocomplete(v, searchStore.from)}
           onChange={(l) => searchStore.setDestination(l.value)}
         />
       </div>
-      <div className="column is-1">
+      <div className="column is-2 ">
       <DatePicker wrapperClassName={styles.datepicker} selected={new Date(searchStore.departureDate)} onChange={value => value && searchStore.setDepartureDate(value)} />
       </div>
       <When condition={searchStore.isReturn}>
