@@ -1,20 +1,16 @@
-import { GetServerSideProps, GetServerSidePropsContext } from 'next'
-import Image from 'next/image'
+// import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 import React, { FormEvent, useState } from 'react'
 import Input from '../components/input'
-import img from '../public/sample.png'
-import { Trip } from '../types'
-import { getTripById } from './api/trip'
-import useCartStore from '../stores/cart.store'
+// import { Trip } from '../types'
+// import { getTripById } from './api/trip'
 import CartSidebar from '../components/cart-sidebar'
 import { When } from 'react-if'
 
-interface CheckoutProps {
-  trip: Trip
-}
+// interface CheckoutProps {
+//   trip: Trip
+// }
 
-const Checkout = ({ trip }: CheckoutProps) => {
-  const cart = useCartStore()
+const Checkout = () => {
   // Declare state variables and set their initial values
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
