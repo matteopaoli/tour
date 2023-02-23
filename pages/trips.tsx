@@ -9,6 +9,7 @@ import { When } from "react-if"
 import { FormEvent, useState } from "react"
 import useCartStore from "../stores/cart.store"
 import CartSidebar from "../components/cart-sidebar"
+import { motion } from 'framer-motion'
 
 interface TripPageProps {
   results: SearchResponse
@@ -53,7 +54,19 @@ const TripPage = ({ results }: TripPageProps): JSX.Element => {
           <SearchFormOneLine onSubmit={fetchNewResults} />
           <div className="columns is-centered">
             <div className="column is-8">
+            <motion.div
+              initial={{ x: 300, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 300, opacity: 0 }}
+              key="trips"
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+              }}
+            >
             <SearchResults trips={searchResults[0]} onSelect={(item) => setIsOutboundSelected(!!item)} />
+            </motion.div>
             <When condition={isOutboundSelected && search.lastSearch?.isReturn}>
               <SearchResults trips={searchResults[1]} onSelect={() => []} />
             </When>

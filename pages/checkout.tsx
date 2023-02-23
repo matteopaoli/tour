@@ -7,7 +7,7 @@ import CartSidebar from '../components/cart-sidebar'
 import { When } from 'react-if'
 import "react-datepicker/dist/react-datepicker.css"
 import DobDatepicker from '../components/dob-datepicker'
-
+import { motion } from 'framer-motion'
 
 // interface CheckoutProps {
 //   trip: Trip
@@ -30,6 +30,16 @@ const Checkout = () => {
   }
 
   return (
+    <motion.div
+    initial={{ x: 300, opacity: 0 }}
+    animate={{ x: 0, opacity: 1 }}
+    exit={{ x: 300, opacity: 0 }}
+    transition={{
+      type: "spring",
+      stiffness: 260,
+      damping: 20,
+    }}
+  >
     <div className="columns mt-5 is-centered">
       <form className="box column is-5" onSubmit={handleSubmit}>
         <div className="columns is-multiline p-5">
@@ -74,6 +84,7 @@ const Checkout = () => {
       </form>
       <CartSidebar />
     </div>
+    </motion.div>
   )
 }
 
