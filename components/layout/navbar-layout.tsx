@@ -1,5 +1,4 @@
 import Navbar from "../navbar"
-import { motion } from "framer-motion";
 
 interface NavbarLayoutProps {
   children: JSX.Element
