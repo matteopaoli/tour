@@ -19,7 +19,7 @@ export default function CartSidebar({ withCheckoutButton }: CartSidebarProps) {
     <div className="column is-3">
       <div className="box py-5">
         <h2 className="is-size-3 has-text-weight-bold">Your cart</h2>
-        {cart.items.map(item => <CartItem item={item} key={item._id as string} />)}
+        {cart.items.map(item => <CartItem item={item} key={item._id as string} canRemove={withCheckoutButton ?? false} />)}
         <h2 className="is-size-4 has-text-weight-bold is-flex is-justify-content-space-between"><div>Total:</div><div>{cartTotal}฿</div></h2>
         <When condition={withCheckoutButton}>
           <div className="is-flex is-justify-content-flex-end">
