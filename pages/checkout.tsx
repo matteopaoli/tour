@@ -5,6 +5,9 @@ import Input from '../components/input'
 // import { getTripById } from './api/trip'
 import CartSidebar from '../components/cart-sidebar'
 import { When } from 'react-if'
+import "react-datepicker/dist/react-datepicker.css"
+import DobDatepicker from '../components/dob-datepicker'
+
 
 // interface CheckoutProps {
 //   trip: Trip
@@ -15,7 +18,7 @@ const Checkout = () => {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
-  const [dob, setDob] = useState('')
+  const [dob, setDob] = useState<Date | null>(new Date)
   const [passportNumber, setPassportNumber] = useState('')
   const [isCreateAccount, setIsCreateAccount] = useState<boolean>(false)
   const [password, setPassword] = useState<string>('')
@@ -40,9 +43,14 @@ const Checkout = () => {
             <Input value={email} label="Email" onChange={setEmail} />
           </div>
           <div className="column is-half">
-            <Input value={dob} label="Date of Birth" onChange={setDob} />
+            <label>
+              <span className="has-text-weight-bold">Date of birth:</span>
+              <DobDatepicker 
+                value={dob}
+                onChange={setDob} />
+            </label>
           </div>
-          <div className="column is-half">
+          <div className="column is-half">  
             <Input value={passportNumber} label="Passport Number" onChange={setPassportNumber} />
           </div>
         </div>

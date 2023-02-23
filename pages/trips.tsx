@@ -1,13 +1,12 @@
 import { GetServerSidePropsResult, NextPageContext } from "next"
 import Head from "next/head"
-import { SearchResponse } from '../types'
+import { Search, SearchResponse } from '../types'
 import SearchResults from "../components/search-results"
 import { searchTrips, searchTripsWithReturn } from "./api/search"
-import { useRouter } from "next/router"
 import SearchFormOneLine from "../components/search-form/search-form-one-line"
 import useSearchStore from "../stores/search.store"
-import { Else, If, Then, When } from "react-if"
-import { useRef } from "react"
+import { When } from "react-if"
+import { FormEvent, useState } from "react"
 import useCartStore from "../stores/cart.store"
 import CartSidebar from "../components/cart-sidebar"
 
@@ -16,10 +15,32 @@ interface TripPageProps {
 }
 
 const TripPage = ({ results }: TripPageProps): JSX.Element => {
-  const { current: search }  = useRef(useSearchStore())
+  const search = useSearchStore()
   const cart = useCartStore()
+  const [searchResults, setSearchResults] = useState<SearchResponse>(results)
+  const [isOutboundSelected, setIsOutboundSelected] = useState<boolean>(false)
 
-  const router = useRouter()
+  const fetchNewResults = (s: Search, e: FormEvent<HTMLFormElement>): void => {
+    e.preventDefault()
+    const qs: string = new URLSearchParams({ 
+      departure: s.from,
+      destination: s.to,
+      departureDate: s.departureDate,
+      returnDate: s.isReturn? search.returnDate : '',
+      isReturn: s.isReturn.toString() 
+    }).toString()
+
+    fetch(`/api/search?${qs}`)
+    .then(res => res.json())
+    .then((data: SearchResponse) => {
+      cart.reset()
+      search.setLastSearch(search)
+      setSearchResults(data)
+    })
+    .catch((e) => alert(e))
+  } 
+
+
   return (
     <>
       <Head>
@@ -28,32 +49,20 @@ const TripPage = ({ results }: TripPageProps): JSX.Element => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <section className="has-background-primary section">
-        <SearchFormOneLine />
-        <div className="p-4">
+        <div className="p-2">
+          <SearchFormOneLine onSubmit={fetchNewResults} />
           <div className="columns is-centered">
             <div className="column is-8">
-            <If condition={router.query.isReturn === 'true'}>
-              <Then>
-                <h2 className="is-size-2 has-text-weight-bold has-text-white">Here some suggestions for your roundtrip</h2>
-                <h3 className="is-size-4 has-text-white"><b>{search.from}</b> {'->'} <b>{search.to}</b></h3>
-                <h3 className="is-size-4 has-text-white"><b>{search.to}</b> {'<-'} <b>{search.from}</b></h3>
-              </Then>
-              <Else>
-              <h2 className="is-size-2 has-text-weight-bold has-text-white">Here some suggestions for your trip</h2>
-              <h3 className="is-size-4 has-text-white"><b>{search.from}</b> {'->'} <b>{search.to}</b></h3>
-              </Else>
-            </If>
-              {results.map((result, i) => (
-                <SearchResults key={i} trips={result} />
-              ))}
+            <SearchResults trips={searchResults[0]} onSelect={(item) => setIsOutboundSelected(!!item)} />
+            <When condition={isOutboundSelected && search.lastSearch?.isReturn}>
+              <SearchResults trips={searchResults[1]} onSelect={() => []} />
+            </When>
             </div>
             <When condition={cart.items.length > 0}>
               <CartSidebar withCheckoutButton/>
             </When>
           </div>
-        </div>
-      </section>
+      </div>
     </>
   )
 }
@@ -63,7 +72,7 @@ export default TripPage
 export const getServerSideProps = async (context: NextPageContext): Promise<GetServerSidePropsResult<TripPageProps>> => {
   const { departure, destination, departureDate, returnDate, isReturn } = context.query
   let trips: SearchResponse = []
-  if (isReturn === 'true') {
+  if (isReturn?.toString() === 'true') {
     if ([departure, destination, departureDate, returnDate].every(Boolean)) {
       trips = await searchTripsWithReturn(departure!.toString(), destination!.toString(), departureDate!.toString(), returnDate!.toString())
       return {

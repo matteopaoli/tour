@@ -5,6 +5,10 @@ import useCartStore from "../stores/cart.store"
 import { useMemo } from "react"
 import checkIcon from '../public/icons/check.svg'
 import getTime from "../lib/get-time"
+import chevronIcon from '../public/icons/chevron-right.svg'
+import useSearchStore from "../stores/search.store"
+import { useRouter } from "next/router"
+
 
 interface SearchResultProps {
   trip: Trip
@@ -12,13 +16,23 @@ interface SearchResultProps {
 
 const SearchResult = ({ trip }: SearchResultProps): JSX.Element => {
   const cart = useCartStore()
+  const search = useSearchStore()
+  const router = useRouter()
   
   const isSelected = useMemo<boolean>(() => {
     return Boolean(cart.items.find((item) => item._id === trip._id))
   }, [cart.items, trip])
 
   const onButtonClick = () => {
-    cart[isSelected? 'removeItem': 'addItem'](trip)
+    if ((!search.isReturn && cart.items.length === 0) || (search.isReturn && cart.items.length === 1)) {
+      router.push('/checkout').then(() => {
+        cart[isSelected? 'removeItem': 'addItem'](trip)
+      })
+      .catch(alert)
+    }
+    else {
+      cart[isSelected? 'removeItem': 'addItem'](trip)
+    }
   }
 
   return (
@@ -60,7 +74,9 @@ const SearchResult = ({ trip }: SearchResultProps): JSX.Element => {
               <p className="has-text-weight-bold is-half subtitle is-6">{getTime(trip.dateEnd)}</p>
             </div>
           </div>
-          <div className="button is-primary is-2 has-text-weight-bold is-fullwidth" onClick={onButtonClick}>{isSelected? <Image src={checkIcon as StaticImageData} alt="icon" />: 'Select this ticket'}</div>
+          <div className="button is-primary is-2 has-text-weight-bold is-fullwidth" onClick={onButtonClick}>
+            <Image src={(isSelected? checkIcon : chevronIcon) as StaticImageData} alt="icon" />
+          </div>
         </div>
         </div>
       </div>

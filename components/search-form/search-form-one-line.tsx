@@ -6,41 +6,45 @@ import styles from './search-form.module.scss'
 import "react-datepicker/dist/react-datepicker.css"
 import { When } from "react-if"
 import useSearchStore from "../../stores/search.store"
-import useSubmitSearch from "../../hooks/useSubmitSearch"
+import { Search } from "../../types"
+import { FormEvent } from "react"
 
-export default function SearchFormOneLine() {
-  const searchStore = useSearchStore()
-  const submit = useSubmitSearch()
+interface SearchFormOneLineProps {
+  onSubmit: (s: Search, e: FormEvent<HTMLFormElement>) => void
+}
+
+export default function SearchFormOneLine({ onSubmit }: SearchFormOneLineProps): JSX.Element {
+  const search = useSearchStore()
 
  return (
-  <form onSubmit={submit} className="box">
+  <form onSubmit={(e) => onSubmit(search, e)} className="box">
     <div className='columns'>
-      <div className="column is-2">
+      <div className="column is-2 p-1">
         <ReturnDropdown />
       </div>
-      <div className="column is-3">
+      <div className="column is-3 p-1">
         <LocationInput
           fetcher={locationAutocomplete}
-          value={searchStore.from}
-          onChange={(l) => searchStore.setDeparture(l.value)}
+          value={search.from}
+          onChange={(l) => search.setDeparture(l.value)}
         />
       </div>
-      <div className="column is-3">
+      <div className="column is-3 p-1">
         <LocationInput
-          value={searchStore.to}
-          fetcher={(v) => locationAutocomplete(v, searchStore.from)}
-          onChange={(l) => searchStore.setDestination(l.value)}
+          value={search.to}
+          fetcher={(v) => locationAutocomplete(v, search.from)}
+          onChange={(l) => search.setDestination(l.value)}
         />
       </div>
-      <div className="column is-2 ">
-      <DatePicker wrapperClassName={styles.datepicker} selected={new Date(searchStore.departureDate)} onChange={value => value && searchStore.setDepartureDate(value)} />
+      <div className="column is-2 p-1">
+      <DatePicker wrapperClassName={styles.datepicker} selected={new Date(search.departureDate)} onChange={value => value && search.setDepartureDate(value)} />
       </div>
-      <When condition={searchStore.isReturn}>
-        <div className="column is-1">
-        <DatePicker wrapperClassName={styles.datepicker} selected={new Date(searchStore.returnDate)} onChange={value => value && searchStore.setReturnDate(value)} />
+      <When condition={search.isReturn}>
+        <div className="column is-1 p-1">
+        <DatePicker wrapperClassName={styles.datepicker} selected={new Date(search.returnDate)} onChange={value => value && search.setReturnDate(value)} />
         </div>
       </When>
-      <div className="column is-1">
+      <div className="column is-1 p-1">
         <button type="submit" className="button is-primary is-fullwidth">Search</button>
       </div>
     </div>

@@ -8,6 +8,8 @@ interface SearchState extends Search {
   setDepartureDate: (d: Date) => void
   setReturnDate: (d: Date) => void,
   setReturn: (v: boolean) => void,
+  setLastSearch: (v: Search) => void,
+  lastSearch: Search | null
 }
 
 const useSearchStore: UseBoundStore<StoreApi<SearchState>> = create<SearchState>((set) => ({
@@ -17,6 +19,8 @@ const useSearchStore: UseBoundStore<StoreApi<SearchState>> = create<SearchState>
   returnDate: '2023-03-08',
   passengers: 1,
   isReturn: false,
+  lastSearch: null,
+  setLastSearch: (lastSearch: Search) => set(() => ({ lastSearch })),
   setDeparture: (from: string) => set(() => ({ from })),
   setDestination: (to: string) => set(() => ({ to })),
   setDepartureDate: (d: Date) => set(() => ({ departureDate: d.toISOString().split('T')[0] })),

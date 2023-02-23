@@ -1,13 +1,14 @@
 import useCartStore from "../stores/cart.store"
 import { Trip } from "../types"
 import SearchResult from "./search-result"
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 
 interface SearchResultProps {
   trips: Trip[]
+  onSelect: (t: Trip | null) => void
 }
 
-const SearchResults = ({ trips }: SearchResultProps) => {
+const SearchResults = ({ trips, onSelect }: SearchResultProps) => {
   const cart = useCartStore()
 
   const selectedTrip = useMemo<Trip | null>(() => {
@@ -15,10 +16,16 @@ const SearchResults = ({ trips }: SearchResultProps) => {
   return result ?? null
   }, [cart.items, trips])
 
+  useEffect(() => {
+    onSelect(selectedTrip)
+  }, [selectedTrip, onSelect])
+
+
   return (
     <div className="search-results p-4">
-      {selectedTrip? 
+      {selectedTrip? (
         <SearchResult trip={selectedTrip} /> 
+      )
         : trips.map((trip) => (
           <SearchResult key={trip._id.toString()} trip={trip} />
         ))

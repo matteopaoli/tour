@@ -6,6 +6,7 @@ interface CartState {
   items: Trip[]
   addItem: (t: Trip) => void
   removeItem: (t: Trip) => void
+  reset: () => void
 }
 
 const useCartStore: UseBoundStore<StoreApi<CartState>> = create<CartState>((set) => ({
@@ -14,7 +15,8 @@ const useCartStore: UseBoundStore<StoreApi<CartState>> = create<CartState>((set)
   removeItem: (t: Trip) => set(state => {
     const newArr = state.items.filter((item: Trip) => item._id !== t._id )
     return ({ items: newArr })
-  })
+  }),
+  reset: () => set(() => ({ items: [] }))
 }))
 
 mountStoreDevtool('CartStore', useCartStore)

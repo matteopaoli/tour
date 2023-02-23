@@ -38,7 +38,7 @@ export async function searchTripsWithReturn(departure: string, destination: stri
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { departure, destination, departureDate, returnDate, isReturn } = req.query
-    if (isReturn) {
+    if (isReturn === 'true') {
       if ([departure, destination, departureDate, returnDate].every(Boolean)) {
         const results = await searchTripsWithReturn(departure!.toString(), destination!.toString(), departureDate!.toString(), returnDate!.toString())
         res.status(200).json(results)
