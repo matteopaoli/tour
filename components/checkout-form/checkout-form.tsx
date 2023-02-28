@@ -35,7 +35,6 @@ export default function CheckoutForm() {
 
   const onSubmit = (data: CheckoutFormFields) => {
     data.dob = format(new Date(data.dob), 'yyyy-MM-dd')
-    console.log(data)
   }
 
   return (
