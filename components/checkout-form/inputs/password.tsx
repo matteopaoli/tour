@@ -1,22 +1,37 @@
-import { FieldError, UseFormRegisterReturn } from "react-hook-form";
+import { FieldError, UseFormRegister } from "react-hook-form"
+import CheckoutFormFields from "../../../types/checkout-form"
 
 interface PasswordProps {
   error: FieldError | undefined;
   triggerValidation: () => void;
-  field: UseFormRegisterReturn<"password">;
+  register: UseFormRegister<CheckoutFormFields>
 }
 
 export default function Password({
   error,
   triggerValidation,
-  field,
+  register,
 }: PasswordProps): JSX.Element {
+
+  const passwordField = register("password", {
+    required: "Password is required",
+    minLength: {
+      value: 8,
+      message: "Password must be at least 8 characters long",
+    },
+    pattern: {
+      value: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm,
+      message:
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+    },
+  })
+
   return (
     <div className="column is-6 field">
       <label className="label">Password</label>
       <div className="control">
         <input
-          {...field}
+          {...passwordField}
           className={`input ${error ? "is-danger" : ""}`}
           aria-invalid={error ? "true" : "false"}
           type="password"
@@ -35,5 +50,5 @@ export default function Password({
         </p>
       )}
     </div>
-  );
+  )
 }

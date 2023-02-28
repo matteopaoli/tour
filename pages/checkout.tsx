@@ -1,35 +1,13 @@
 // import { GetServerSideProps, GetServerSidePropsContext } from 'next'
-import React, { FormEvent, useState } from 'react'
-import Input from '../components/input'
+import React from 'react'
 // import { Trip } from '../types'
 // import { getTripById } from './api/trip'
 import CartSidebar from '../components/cart-sidebar'
-import { When } from 'react-if'
 import "react-datepicker/dist/react-datepicker.css"
-import DobDatepicker from '../components/dob-datepicker'
 import { motion } from 'framer-motion'
 import CheckoutForm from '../components/checkout-form/'
 
-// interface CheckoutProps {
-//   trip: Trip
-// }
-
-const Checkout = () => {
-  // Declare state variables and set their initial values
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [dob, setDob] = useState<Date | null>(new Date)
-  const [passportNumber, setPassportNumber] = useState('')
-  const [isCreateAccount, setIsCreateAccount] = useState<boolean>(false)
-  const [password, setPassword] = useState<string>('')
-  const [repeatPassword, setRepeatPassword] = useState<string>('')
-
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-  }
-
+const Checkout = (): JSX.Element => {
   return (
     <motion.div
     initial={{ x: 300, opacity: 0 }}

@@ -1,26 +1,40 @@
-import { Control, Controller, FieldError, UseFormRegisterReturn } from "react-hook-form"
-import CheckoutFormFields from "../../../types/checkout-form";
-import ReactDatePicker from "react-datepicker";
+import { Control, Controller, FieldError, UseFormRegister } from 'react-hook-form'
+import CheckoutFormFields from '../../../types/checkout-form'
+import ReactDatePicker from 'react-datepicker'
+import { addYears } from 'date-fns'
+
 
 interface DobProps {
   error: FieldError | undefined;
   triggerValidation: () => void;
-  field: UseFormRegisterReturn<"dob">
-  control: Control<CheckoutFormFields, any>
+  register: UseFormRegister<CheckoutFormFields>
+  control: Control<CheckoutFormFields>
 }
 
 export default function Dob({
   error,
   triggerValidation,
-  field,
+  register,
   control
 }: DobProps): JSX.Element {
+
+  const dobField = register('dob', {
+    required: true,
+    validate: (value): string | undefined => {
+      const dobDate = new Date(value)
+      if (addYears(dobDate, 14) > new Date()) {
+        return 'You must be at least 14 years old'
+      }
+      return undefined
+    },
+  })
+
   return (
     <div className="column is-6 field">
     <label className="label">Date of Birth</label>
     <div className="control">
       <Controller
-        {...field}
+        {...dobField}
         control={control}
         render={({ field: { onChange, value } }) => (
           <ReactDatePicker
@@ -35,10 +49,10 @@ export default function Dob({
         )}
       />
     </div>
-    {error?.type === "required" && (
+    {error?.type === 'required' && (
       <p className="help is-danger">Date of birth is required</p>
     )}
-    {error?.type === "validate" && (
+    {error?.type === 'validate' && (
       <p className="help is-danger">{error.message}</p>
     )}
   </div>

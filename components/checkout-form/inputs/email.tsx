@@ -1,9 +1,9 @@
-import { FieldError, UseFormRegisterReturn } from "react-hook-form";
+import { FieldError, UseFormRegisterReturn } from "react-hook-form"
 
 interface EmailProps {
   error: FieldError | undefined;
   triggerValidation: () => void;
-  field: UseFormRegisterReturn<"mail">;
+  field: UseFormRegisterReturn<"mail">
 }
 
 export default function Email({

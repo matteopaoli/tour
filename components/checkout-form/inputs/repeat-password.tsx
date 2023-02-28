@@ -1,9 +1,9 @@
-import { FieldError, UseFormRegisterReturn } from "react-hook-form";
+import { FieldError, UseFormRegisterReturn } from "react-hook-form"
 
 interface RepeatPasswordProps {
   error: FieldError | undefined;
   triggerValidation: () => void;
-  field: UseFormRegisterReturn<"repeatPassword">;
+  field: UseFormRegisterReturn<"repeatPassword">
 }
 
 export default function RepeatPassword({
@@ -28,5 +28,5 @@ export default function RepeatPassword({
       <p className="help is-danger">{error.message}</p>
     )}
   </div>
-  );
+  )
 }
