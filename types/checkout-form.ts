@@ -3,7 +3,7 @@ export default interface CheckoutFormFields {
   lastName: string
   mail: string
   documentNumber: string
-  dob: string
+  dob: string | Date
   password: string
   repeatPassword: string
   accountSignup: boolean

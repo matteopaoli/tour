@@ -9,6 +9,7 @@ import Document from "./inputs/document"
 import AccountSignup from "./inputs/account-signup"
 import Password from "./inputs/password"
 import RepeatPassword from "./inputs/repeat-password"
+import { format } from 'date-fns'
 
 export default function CheckoutForm() {
   const {
@@ -32,8 +33,13 @@ export default function CheckoutForm() {
   })
   const [showPasswordFields, setShowPasswordFields] = useState<boolean>(false)
 
+  const onSubmit = (data: CheckoutFormFields) => {
+    data.dob = format(new Date(data.dob), 'yyyy-MM-dd')
+    console.log(data)
+  }
+
   return (
-    <form onSubmit={handleSubmit(() => null)} className="box">
+    <form onSubmit={handleSubmit(onSubmit)} className="box">
       <div className="columns">
         <FirstName
           field={{ ...register("firstName", { required: true }) }}
@@ -89,6 +95,7 @@ export default function CheckoutForm() {
           />
         </div>
       )}
+      <button className="button is-primary" type="submit">Submit</button>
     </form>
   )
 }
