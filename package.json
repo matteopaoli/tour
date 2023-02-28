@@ -37,6 +37,7 @@
     "zustand": "^4.3.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.31.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@types/bcrypt": "^5.0.0",
