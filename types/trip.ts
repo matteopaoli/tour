@@ -16,5 +16,8 @@ export default interface Trip {
   operator: string;
   price: number
   features: Feature[]
-  seatsAvailable: number
+  quantity: number
+  discountId?: string | ObjectId
+  createdAt: Date
+  modifiedAt: Date
 }

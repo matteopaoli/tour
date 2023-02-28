@@ -1,6 +1,6 @@
 import { Filter } from 'mongodb'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { connect, getDb } from '../../lib/mongodb'
+import { connectToDatabase } from '../../lib/mongodb'
 import { SearchResponse, Trip } from '../../types'
 
 export async function searchTrips(departure: string, destination: string, departureDate: string): Promise<SearchResponse> {
@@ -9,8 +9,7 @@ export async function searchTrips(departure: string, destination: string, depart
   endOfDate.setDate(endOfDate.getDate() + 1)
 
   const filters: Filter<Trip> = { 'points.0.name': departure , 'points.1.name': destination, dateStart: { $gte: startOfDate, $lt: endOfDate } }
-  await connect()
-  const collection = getDb().collection<Trip>('trips')
+  const collection = (await connectToDatabase()).collection<Trip>('trips')
   
   return [await collection.find(filters).toArray()]
 }
@@ -26,8 +25,7 @@ export async function searchTripsWithReturn(departure: string, destination: stri
   const filtersOutbound: Filter<Trip> = { 'points.0.name': departure, 'points.1.name': destination, dateStart: { $gte: startOfOutboundDate, $lt: endOfOutboundDate } }
   const filtersReturn: Filter<Trip> = { 'points.0.name': destination, 'points.1.name': departure, dateStart: { $gte: startOfReturnDate, $lt: endOfReturnDate } }
 
-  await connect()
-  const collection = getDb().collection<Trip>('trips')
+  const collection = (await connectToDatabase()).collection<Trip>('trips')
   
   return Promise.all([
     collection.find(filtersOutbound).toArray(),

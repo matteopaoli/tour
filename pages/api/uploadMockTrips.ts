@@ -1,6 +1,6 @@
 // import { Filter } from 'mongodb'
 import { NextApiRequest, NextApiResponse } from 'next'
-// import { connect, getDb } from '../../lib/mongodb'
+// import { connectToDatabase } from '../../lib/mongodb'
 // import { Trip } from '../../types'
 
 export async function uploadTrips(): Promise<void> {

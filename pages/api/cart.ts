@@ -4,7 +4,8 @@ import { connectToDatabase } from '../../lib/mongodb'
 import { Trip } from '../../types'
 
 export async function getTripById(id: string): Promise<Trip | null> {
-  const collection = (await connectToDatabase()).collection<Trip>('trips')
+  const db = await connectToDatabase()
+  const collection = db.collection<Trip>('trips')
   const trip = await collection.findOne({ _id: new ObjectId(id)  })
 
   return trip

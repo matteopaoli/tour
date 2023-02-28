@@ -1,6 +1,6 @@
 import { Filter } from 'mongodb'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { connect, getDb } from '../../../lib/mongodb'
+import { connectToDatabase } from '../../../lib/mongodb'
 import { Trip } from '../../../types'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -11,8 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const { location, from } = req.query
-      await connect()
-      const collection = getDb().collection<Trip>('trips')
+      const collection = (await connectToDatabase()).collection<Trip>('trips')
       let filter: Filter<Trip>
       if (from) {
         if (location) filter = { 'points.0.name': from, 'points.1.name': { '$regex': location.toString() } }

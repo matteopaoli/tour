@@ -1,24 +1,20 @@
-import { Db, MongoClient } from 'mongodb'
+import { MongoClient, Db } from 'mongodb'
 
-let db: Db | null = null
+const uri = process.env.MONGODB_URI
 
-export const connect = async (): Promise<Db | undefined> => {
-  if (db) return db
+let cachedDb: Db | null = null
 
-  const dbUri = process.env.MONGODB_URI
-  if (dbUri) {
-    const client = new MongoClient(dbUri)
-    await client.connect()
-    db = client.db('main')
-    return db
+export async function connectToDatabase(): Promise<Db> {
+  if (cachedDb) {
+    return cachedDb
   }
-  
-  return undefined
-}
 
-export function getDb(): Db {
-  if (db) {
-    return db
-  }
-  else throw new Error('No db connection')
+  const client = await MongoClient.connect(uri!, {
+    maxPoolSize: 10
+  })
+
+  const db = client.db('main')
+
+  cachedDb = db
+  return db
 }
