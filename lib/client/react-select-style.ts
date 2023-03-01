@@ -1,5 +1,5 @@
 import { StylesConfig } from 'react-select'
-import { LocationOption } from '../types'
+import { LocationOption } from '../../types'
 
 const customStyle: StylesConfig<LocationOption, false> = {
   option: (defaultStyles, state) => ({

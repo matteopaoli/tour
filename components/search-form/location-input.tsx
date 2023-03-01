@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Select, { SingleValue } from 'react-select'
 import { LocationOption } from '../../types'
-import customStyle from '../../lib/react-select-style'
+import customStyle from '../../lib/client/react-select-style'
 
 interface LocationInputProps {
   value: string,

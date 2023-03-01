@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import customStyle from "../../lib/react-select-style"
+import customStyle from "../../lib/client/react-select-style"
 import Select from 'react-select'
 import useSearchStore from "../../stores/search.store"
 
