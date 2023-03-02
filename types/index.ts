@@ -4,7 +4,6 @@ import APIResponse from './api-response'
 import StatusResponse from './status-response'
 import Search from './search'
 import LocationOption from './location-option'
-import SearchResponse from './search-response'
 import User from './user'
 import Discount from './discount'
 import CartItem from './cart-item'
@@ -15,7 +14,6 @@ export type {
   ErrorResponse,
   LocationOption,
   Search,
-  SearchResponse,
   StatusResponse,
   Trip,
   User,

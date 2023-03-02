@@ -1,4 +1,4 @@
-import locationAutocomplete from "../../lib/location-autocomplete"
+import locationAutocomplete from "../../lib/client/location-autocomplete"
 import LocationInput from "./location-input"
 import ReturnDropdown from "./return-dropdown"
 import DatePicker from 'react-datepicker'
@@ -6,18 +6,17 @@ import styles from './search-form.module.scss'
 import "react-datepicker/dist/react-datepicker.css"
 import { When } from "react-if"
 import useSearchStore from "../../stores/search.store"
-import { Search } from "../../types"
 import { FormEvent } from "react"
 
 interface SearchFormOneLineProps {
-  onSubmit: (s: Search, e: FormEvent<HTMLFormElement>) => void
+  onSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>
 }
 
 export default function SearchFormOneLine({ onSubmit }: SearchFormOneLineProps): JSX.Element {
   const search = useSearchStore()
 
  return (
-  <form onSubmit={(e) => onSubmit(search, e)} className="box">
+  <form onSubmit={onSubmit} className="box">
     <div className='columns'>
       <div className="column is-2 p-1">
         <ReturnDropdown />

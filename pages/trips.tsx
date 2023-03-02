@@ -1,46 +1,26 @@
 import { GetServerSidePropsResult, NextPageContext } from "next"
 import Head from "next/head"
-import { Search, SearchResponse } from '../types'
 import SearchResults from "../components/search-results"
-import { searchTrips, searchTripsWithReturn } from "./api/search"
 import SearchFormOneLine from "../components/search-form/search-form-one-line"
 import useSearchStore from "../stores/search.store"
-import { When } from "react-if"
 import { FormEvent, useState } from "react"
-import useCartStore from "../stores/cart.store"
-import CartSidebar from "../components/cart-sidebar"
 import { motion } from 'framer-motion'
+import fetchTrips from "../lib/client/fetch-trips"
+import { Trip } from "../types"
+import { searchTrips } from "./api/search"
 
 interface TripPageProps {
-  results: SearchResponse
+  results: Trip[]
 }
 
-const TripPage = ({ results }: TripPageProps): JSX.Element => {
+export default function TripPage({ results }: TripPageProps): JSX.Element {
   const search = useSearchStore()
-  const cart = useCartStore()
-  const [searchResults, setSearchResults] = useState<SearchResponse>(results)
-  const [isOutboundSelected, setIsOutboundSelected] = useState<boolean>(false)
+  const [searchResults, setSearchResults] = useState<Trip[]>(results)
 
-  const fetchNewResults = (s: Search, e: FormEvent<HTMLFormElement>): void => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
-    const qs: string = new URLSearchParams({ 
-      departure: s.from,
-      destination: s.to,
-      departureDate: s.departureDate,
-      returnDate: s.isReturn? search.returnDate : '',
-      isReturn: s.isReturn.toString() 
-    }).toString()
-
-    fetch(`/api/search?${qs}`)
-    .then(res => res.json())
-    .then((data: SearchResponse) => {
-      cart.reset()
-      search.setLastSearch(search)
-      setSearchResults(data)
-    })
-    .catch((e) => alert(e))
-  } 
-
+    setSearchResults(await fetchTrips(search))
+  }
 
   return (
     <>
@@ -51,7 +31,7 @@ const TripPage = ({ results }: TripPageProps): JSX.Element => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
         <div className="p-2">
-          <SearchFormOneLine onSubmit={fetchNewResults} />
+          <SearchFormOneLine onSubmit={onSubmit} />
           <div className="columns is-centered">
             <div className="column is-8">
             <motion.div
@@ -65,41 +45,24 @@ const TripPage = ({ results }: TripPageProps): JSX.Element => {
                 damping: 20,
               }}
             >
-            <SearchResults trips={searchResults[0]} onSelect={(item) => setIsOutboundSelected(!!item)} />
+              <SearchResults 
+                trips={searchResults} 
+              />
             </motion.div>
-            <When condition={isOutboundSelected && search.lastSearch?.isReturn}>
-              <SearchResults trips={searchResults[1]} onSelect={() => []} />
-            </When>
             </div>
-            <When condition={cart.items.length > 0}>
-              <CartSidebar withCheckoutButton/>
-            </When>
           </div>
       </div>
     </>
   )
 }
 
-export default TripPage
-
 export const getServerSideProps = async (context: NextPageContext): Promise<GetServerSidePropsResult<TripPageProps>> => {
-  const { departure, destination, departureDate, returnDate, isReturn } = context.query
-  let trips: SearchResponse = []
-  if (isReturn?.toString() === 'true') {
-    if ([departure, destination, departureDate, returnDate].every(Boolean)) {
-      trips = await searchTripsWithReturn(departure!.toString(), destination!.toString(), departureDate!.toString(), returnDate!.toString())
-      return {
-        props: {
-          results: JSON.parse(JSON.stringify(trips)) as SearchResponse
-        }
-      }  
-    }
-  }
-  if (departure && destination && departureDate) {
-    trips = await searchTrips(departure.toString(), destination.toString(), departureDate.toString())
+  const { departure, destination, date, quantity } = context.query
+  if (departure && destination && date && quantity) {
+    const trips = await searchTrips(departure.toString(), destination.toString(), date.toString(), +quantity)
     return {
       props: {
-        results: JSON.parse(JSON.stringify(trips)) as SearchResponse
+        results: JSON.parse(JSON.stringify(trips)) as Trip[]
       }
     }     
   }

@@ -1,5 +1,5 @@
 import { When } from "react-if"
-import getTime from "../lib/get-time"
+import getTime from "../lib/client/get-time"
 import useCartStore from "../stores/cart.store"
 import { Trip } from "../types"
 

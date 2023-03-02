@@ -1,49 +1,32 @@
 import { Filter } from 'mongodb'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { connectToDatabase } from '../../lib/mongodb'
-import { SearchResponse, Trip } from '../../types'
+import { Trip } from '../../types'
 
-export async function searchTrips(departure: string, destination: string, departureDate: string): Promise<SearchResponse> {
+export async function searchTrips(departure: string, destination: string, departureDate: string, quantity: number): Promise<Trip[]> {
   const startOfDate = new Date(departureDate)
   const endOfDate = new Date(departureDate)
   endOfDate.setDate(endOfDate.getDate() + 1)
 
-  const filters: Filter<Trip> = { 'points.0.name': departure , 'points.1.name': destination, dateStart: { $gte: startOfDate, $lt: endOfDate } }
+  const filters: Filter<Trip> = { 
+    'points.0.name': departure , 
+    'points.1.name': destination,
+    dateStart: { 
+      $gte: startOfDate, 
+      $lt: endOfDate 
+    },
+    seatsAvailable: { $gte: quantity }
+  }
   const collection = (await connectToDatabase()).collection<Trip>('trips')
   
-  return [await collection.find(filters).toArray()]
-}
-
-export async function searchTripsWithReturn(departure: string, destination: string, departureDate: string, returnDate: string): Promise<SearchResponse> {
-  const startOfOutboundDate = new Date(departureDate)
-  const endOfOutboundDate = new Date(departureDate)
-  const startOfReturnDate = new Date(returnDate)
-  const endOfReturnDate = new Date(returnDate)
-  endOfOutboundDate.setDate(startOfOutboundDate.getDate() + 1)
-  endOfReturnDate.setDate(startOfReturnDate.getDate() + 1)
-
-  const filtersOutbound: Filter<Trip> = { 'points.0.name': departure, 'points.1.name': destination, dateStart: { $gte: startOfOutboundDate, $lt: endOfOutboundDate } }
-  const filtersReturn: Filter<Trip> = { 'points.0.name': destination, 'points.1.name': departure, dateStart: { $gte: startOfReturnDate, $lt: endOfReturnDate } }
-
-  const collection = (await connectToDatabase()).collection<Trip>('trips')
-  
-  return Promise.all([
-    collection.find(filtersOutbound).toArray(),
-    collection.find(filtersReturn).toArray()
-  ])
+  return await collection.find(filters).toArray()
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { departure, destination, departureDate, returnDate, isReturn } = req.query
-    if (isReturn === 'true') {
-      if ([departure, destination, departureDate, returnDate].every(Boolean)) {
-        const results = await searchTripsWithReturn(departure!.toString(), destination!.toString(), departureDate!.toString(), returnDate!.toString())
-        res.status(200).json(results)
-      }
-    }
-    else if (departure && destination && departureDate) {
-      const results = await searchTrips(departure.toString(), destination.toString(), departureDate.toString())
+    const { departure, destination, date, quantity } = req.query 
+    if (departure && destination && date) {
+      const results = await searchTrips(departure.toString(), destination.toString(), date.toString(), quantity)
       if (results.length > 0) {
         res.status(200).json(results)
       }
