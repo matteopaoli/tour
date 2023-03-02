@@ -1,32 +1,17 @@
-import { When } from "react-if"
 import getTime from "../lib/client/get-time"
-import useCartStore from "../stores/cart.store"
 import { Trip } from "../types"
 
 interface CartItemProps {
   item: Trip
-  canRemove: boolean
 }
 
-export default function CartItem({ item, canRemove }: CartItemProps): JSX.Element {
-  const cart = useCartStore()
-
-
+export default function CartItem({ item }: CartItemProps): JSX.Element {
   return (
     <div 
       className="box has-background-white-ter p-0 pt-3"
       style={{ border: '1px solid hsl(0, 0%, 70%)' }}
       key={item._id as string}
     >
-      <div
-        className="is-flex is-justify-content-space-between is-align-items-center px-4"
-        style={{ borderTopLeftRadius: 15, borderTopRightRadius: 15 }}
-      >
-        <When condition={canRemove}>
-        <button className="button is-text p-0 mt-0" onClick={() => cart.removeItem(item)}>Remove</button> 
-
-        </When>
-      </div>
     <div className="px-3">
       <div className="has-text-weight-bold">
         {item.points[0].name}

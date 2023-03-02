@@ -1,6 +1,6 @@
-import { LocationOption } from "../../types"
+import { Option } from "../../types"
 
-const locationAutocomplete = (value: string, origin?: string): Promise<LocationOption[]> => {
+const locationAutocomplete = (value: string, origin?: string): Promise<Option[]> => {
   const url = `/api/location/autocomplete?location=${value}${origin? `&from=${origin}` : ''}`
   return fetch(url)
     .then((response) => response.json())

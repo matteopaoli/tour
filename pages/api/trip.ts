@@ -5,8 +5,7 @@ import { Trip } from '../../types'
 
 export async function getTripById(id: string): Promise<Trip | null> {
   const collection = (await connectToDatabase()).collection<Trip>('trips')
-  const trip = await collection.findOne({ _id: new ObjectId(id)  })
-
+  const trip = await collection.findOne({ _id: new ObjectId(id) })
   return trip
 }
 

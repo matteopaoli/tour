@@ -5,7 +5,6 @@ import styles from './search-form.module.scss'
 import "react-datepicker/dist/react-datepicker.css"
 import LocationInput from './location-input'
 import locationAutocomplete from '../../lib/client/location-autocomplete'
-import ReturnDropdown from './return-dropdown'
 import useSearchStore from '../../stores/search.store'
 import useSubmitSearch from '../../hooks/useSubmitSearch'
 
@@ -22,24 +21,24 @@ const SearchForm = () => {
       }} 
       className="box"
     >
-    <div className='columns'>
+    {/* <div className='columns'>
       <div className="column is-2">
         <ReturnDropdown />
       </div>
-    </div>
+    </div> */}
     <div className="columns">
       <div className="column">
         <LocationInput
           fetcher={locationAutocomplete}
           value={search.from}
-          onChange={(l) => search.setDeparture(l.value)}
+          onChange={(l) => search.setDeparture(l.value as string)}
         />
       </div>
       <div className="column">
         <LocationInput
           value={search.to}
           fetcher={(v) => locationAutocomplete(v, search.from)}
-          onChange={(l) => search.setDestination(l.value)}
+          onChange={(l) => search.setDestination(l.value as string)}
         />
       </div>
     </div>
@@ -47,11 +46,11 @@ const SearchForm = () => {
       <div className="column is-6">
         <DatePicker wrapperClassName={styles.datepicker} selected={new Date(search.departureDate)} onChange={value => value && search.setDepartureDate(value)} />
       </div>
-      {search.isReturn && (
+      {/* {search.isReturn && (
         <div className="column is-6">
           <DatePicker wrapperClassName={styles.datepicker} selected={new Date(search.returnDate)} onChange={value => value && search.setReturnDate(value)} />
         </div>
-      )}
+      )} */}
 
     </div>
     <button type="submit" className="button is-primary is-fullwidth">Search</button>

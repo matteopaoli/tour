@@ -3,12 +3,21 @@ import { Trip } from "../types"
 import mockImage from '../public/bus-image.jpg'
 import chevronIcon from '../public/icons/chevron-right.svg'
 import getTime from '../lib/client/get-time'
+import { useRouter } from "next/router"
+import useSearchStore from "../stores/search.store"
 
 interface SearchResultProps {
   trip: Trip
 }
 
 const SearchResult = ({ trip }: SearchResultProps): JSX.Element => {
+  const router = useRouter()
+  const quantity = useSearchStore(s => s.passengers)
+
+  const onClick = () => {
+    void router.push(`/checkout/${trip._id.toString()}?q=${quantity}`)
+  }
+
   return (
     <div className="box columns is-vcentered my-5">
       <div className="column is-2 is-hidden-mobile">
@@ -48,7 +57,7 @@ const SearchResult = ({ trip }: SearchResultProps): JSX.Element => {
               <p className="has-text-weight-bold is-half subtitle is-6">{getTime(trip.dateEnd)}</p>
             </div>
           </div>
-          <button className="button is-primary is-2 has-text-weight-bold is-fullwidth">
+          <button className="button is-primary is-2 has-text-weight-bold is-fullwidth" onClick={onClick}>
             <Image src={chevronIcon as StaticImageData} alt="icon" />
           </button>
         </div>

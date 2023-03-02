@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Select, { SingleValue } from 'react-select'
-import { LocationOption } from '../../types'
+import { Option } from '../../types'
 import customStyle from '../../lib/client/react-select-style'
 
 interface LocationInputProps {
   value: string,
-  onChange: (l: LocationOption) => void
-  fetcher: (v: string) => Promise<LocationOption[]>
+  onChange: (l: Option) => void
+  fetcher: (v: string) => Promise<Option[]>
 }
 
 export default function LocationInput({ fetcher, value = '', onChange }: LocationInputProps) {
   const [inputValue, setInputValue] = useState<string>('')
-  const [suggestions, setSuggestions] = useState<LocationOption[]>([])
+  const [suggestions, setSuggestions] = useState<Option[]>([])
 
   const getSuggestions = useCallback((v: string): void => {
     fetcher(v).then(setSuggestions).catch(alert)
@@ -23,13 +23,13 @@ export default function LocationInput({ fetcher, value = '', onChange }: Locatio
     }
   }, [getSuggestions, inputValue]) 
 
-  const changeValue = (value: SingleValue<LocationOption>) => {
+  const changeValue = (value: SingleValue<Option>) => {
     if (value) {
       onChange(value)
     }
   }
 
-  const optionValue = useMemo<LocationOption>(() => ({
+  const optionValue = useMemo<Option>(() => ({
     value,
     label: value
   }), [value])
