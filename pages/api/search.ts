@@ -25,8 +25,8 @@ export async function searchTrips(departure: string, destination: string, depart
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { departure, destination, date, quantity } = req.query 
-    if (departure && destination && date) {
-      const results = await searchTrips(departure.toString(), destination.toString(), date.toString(), quantity)
+    if (departure && destination && date && quantity) {
+      const results = await searchTrips(departure.toString(), destination.toString(), date.toString(), +quantity)
       if (results.length > 0) {
         res.status(200).json(results)
       }
