@@ -6,6 +6,9 @@
       "type": "node-terminal",
       "request": "launch",
       "command": "npm run dev"
+      
+      
+      
     },
     {
       "name": "Next.js: debug client-side",
