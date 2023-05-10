@@ -39,13 +39,19 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.busapp.models.SearchData
+import com.example.busapp.networking.TourManager
 import com.marosseleng.compose.material3.datetimepickers.date.ui.dialog.DatePickerDialog
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun SearchScreen(navController: NavController) {
-    var searchData by remember { mutableStateOf(SearchData()) }
+fun SearchScreen(navController: NavController, tourManager: TourManager) {
+    var searchData by remember { mutableStateOf(SearchData(
+        departureLocation = "Bangkok Suvarnabhumi Airport",
+        destinationLocation = "Bangkok train station",
+        departureDate = LocalDate.parse("01/03/2023", DateTimeFormatter.ofPattern("d/MM/yyyy"))
+    )) }
     var isDepartureDateDialogOpen by remember { mutableStateOf(false) }
     var isReturnDateDialogOpen by remember { mutableStateOf(false) }
 
@@ -57,10 +63,10 @@ fun SearchScreen(navController: NavController) {
         floatingActionButton = {
             ElevatedButton(
                 onClick = {
-                    navController.currentBackStackEntry?.savedStateHandle?.set("search-data", searchData)
+                    tourManager.searchTrips(searchData)
                     navController.navigate("search-result") },
                 shape = CircleShape,
-                //enabled = searchData.isSearchDataValid
+                enabled = searchData.isSearchDataValid
                 ) {
                 Icon(
                     Icons.Default.Search, contentDescription = "Search", modifier = Modifier.size(40.dp))
@@ -192,6 +198,6 @@ fun SearchScreen(navController: NavController) {
 @Composable
 fun SearchScreenPreview() {
     MaterialTheme() {
-        SearchScreen(rememberNavController())
+        SearchScreen(rememberNavController(), TourManager())
     }
 }
