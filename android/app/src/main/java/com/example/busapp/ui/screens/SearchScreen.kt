@@ -1,15 +1,29 @@
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+
 package com.example.busapp.ui.screens
 
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.util.Log
+import android.widget.Space
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -36,33 +50,66 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.graphics.createBitmap
 import androidx.navigation.NavController
 import com.example.busapp.models.SearchData
+import com.example.busapp.models.TripData
+import com.example.busapp.networking.Resource
 import com.example.busapp.networking.TourManager
 import com.marosseleng.compose.material3.datetimepickers.date.ui.dialog.DatePickerDialog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.reflect.jvm.internal.impl.types.model.TypeSystemInferenceExtensionContext
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(navController: NavController, tourManager: TourManager) {
+    val trips = tourManager.trips.value
     Scaffold() { p ->
         p
-        Card (modifier = Modifier.padding(16.dp)){
-            SearchForm(tourManager)
+        LazyColumn(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize()
+        ) {
+            item {
+                Card {
+                    SearchForm(tourManager)
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            if (trips != null) {
+                when (trips) {
+                    is Resource.Loading -> {
+                        /*Show Loading*/
+                    }
+
+                    is Resource.Success -> {
+                        if (trips.data != null) {
+                            items(trips.data) { trip ->
+                                TripResultItem(trip = trip)
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
+                        }
+                    }
+
+                    is Resource.Error -> {/*Show Error*/
+                    }
+                }
+            }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchForm(tourManager: TourManager) {
 
@@ -221,7 +268,7 @@ fun SearchForm(tourManager: TourManager) {
 
 }
 
-fun searchFormConstraint(margin: Dp = 16.dp) = ConstraintSet {
+private fun searchFormConstraint(margin: Dp = 16.dp) = ConstraintSet {
     val departureLocation = createRefFor("departureLocation")
     val destinationLocation = createRefFor("destinationLocation")
     val departureDate = createRefFor("departureDate")
@@ -278,3 +325,117 @@ fun SearchFormPreview() {
         SearchForm(TourManager())
     }
 }
+
+@Composable
+fun TripResultItem(trip: TripData) {
+    Card(modifier = Modifier.fillMaxSize()) {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            ConstraintLayout(
+                tripResultItemConstraint(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+            ) {
+                Text(trip._id, modifier = Modifier.layoutId("lineName"))
+                Text(trip.operator, modifier = Modifier.layoutId("operator"))
+                Text(
+                    "09:18",
+                    modifier = Modifier.layoutId("departureTime"),
+                    textAlign = TextAlign.End
+                )
+                Text(
+                    "09:19",
+                    modifier = Modifier.layoutId("arrivalTime"),
+                    textAlign = TextAlign.End
+                )
+                Text(
+                    trip.points.first().name,
+                    modifier = Modifier.layoutId("departureLocation"),
+                    maxLines = 2
+                )
+                Text(
+                    trip.points.last().name,
+                    modifier = Modifier
+                        .layoutId("arrivalLocation"),
+                    maxLines = 2
+                )
+                Box(
+                    modifier = Modifier
+                        .layoutId("tripLine")
+                )
+                Text(trip.price.toString(), modifier = Modifier.layoutId("price"))
+            }
+        }
+    }
+}
+
+private fun tripResultItemConstraint(margin: Dp = 16.dp) = ConstraintSet {
+    val lineName = createRefFor("lineName")
+    val operator = createRefFor("operator")
+    val departureLocation = createRefFor("departureLocation")
+    val departureTime = createRefFor("departureTime")
+    val arrivalLocation = createRefFor("arrivalLocation")
+    val arrivalTime = createRefFor("arrivalTime")
+    val tripLine = createRefFor("tripLine")
+    val price = createRefFor("price")
+
+    val topChain = createHorizontalChain(
+        departureTime,
+        tripLine,
+        departureLocation,
+        chainStyle = ChainStyle.Spread
+    )
+
+    constrain(lineName) {
+        top.linkTo(parent.top)
+        start.linkTo(parent.start)
+    }
+    constrain(operator) {
+        top.linkTo(lineName.bottom)
+        start.linkTo(parent.start)
+    }
+    constrain(departureTime) {
+        top.linkTo(operator.bottom, margin)
+        start.linkTo(parent.start)
+        width = Dimension.fillToConstraints
+        horizontalChainWeight = .2f
+    }
+    constrain(tripLine) {
+        top.linkTo(operator.bottom, margin)
+        start.linkTo(departureTime.end, margin / 2)
+        bottom.linkTo(arrivalLocation.bottom)
+        height = Dimension.fillToConstraints
+        width = Dimension.fillToConstraints
+        horizontalChainWeight = .05f
+    }
+    constrain(departureLocation) {
+        top.linkTo(operator.bottom, margin)
+        start.linkTo(tripLine.end, margin / 2)
+        end.linkTo(parent.end)
+        width = Dimension.fillToConstraints
+        horizontalChainWeight = .75f
+    }
+    constrain(arrivalLocation) {
+        end.linkTo(parent.end)
+        top.linkTo(departureLocation.bottom, margin)
+        start.linkTo(departureLocation.start)
+        width = Dimension.fillToConstraints
+
+    }
+
+    constrain(arrivalTime) {
+        start.linkTo(departureTime.start)
+        end.linkTo(departureTime.end)
+        bottom.linkTo(tripLine.bottom)
+        width = Dimension.fillToConstraints
+
+    }
+
+    constrain(price) {
+        top.linkTo(arrivalLocation.bottom, margin * 2)
+        end.linkTo(parent.end)
+        bottom.linkTo(parent.bottom)
+    }
+}
+
+
