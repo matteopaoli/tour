@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 object API {
-    private const val BASE_URL = "http://192.168.0.105:3000/api/"
+    private const val BASE_URL = "http://192.168.178.61:3000/api/"
 
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())

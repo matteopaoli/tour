@@ -28,7 +28,15 @@ class TourManager {
             _searchData
         }
 
+    private val _selectedTrip = mutableStateOf<TripData?>(null)
+    val selectedTrip: State<TripData?>
+        @Composable get() = remember {
+            _selectedTrip
+        }
 
+    fun selectTrip(tripData: TripData){
+        _selectedTrip.value = tripData
+    }
     fun searchTrips(newSearchData: SearchData) {
         _trips.value = Resource.Loading()
         _searchData.value = newSearchData
