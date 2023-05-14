@@ -28,6 +28,12 @@ class TourManager {
             _searchData
         }
 
+    private val _cart = mutableStateOf(listOf<TripData>())
+    val cart: State<List<TripData>>
+        @Composable get() = remember {
+            _cart
+        }
+
     private val _selectedTrip = mutableStateOf<TripData?>(null)
     val selectedTrip: State<TripData?>
         @Composable get() = remember {
@@ -66,5 +72,19 @@ class TourManager {
                 _trips.value = Resource.Error(message = t.message ?: "Generic error")
             }
         })
+    }
+
+    fun addCurrentTripToCart(){
+        if (_selectedTrip.value != null){
+            val result = mutableListOf<TripData>()
+            result.addAll(_cart.value)
+            result.add(_selectedTrip.value!!)
+            _cart.value = result.toList()
+            _selectedTrip.value = null
+        }
+    }
+
+    fun removeTripFromCart(i:Int){
+
     }
 }

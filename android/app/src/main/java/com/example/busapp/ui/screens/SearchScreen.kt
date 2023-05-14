@@ -14,14 +14,18 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -46,6 +50,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -83,6 +88,7 @@ import kotlin.reflect.jvm.internal.impl.types.model.TypeSystemInferenceExtension
 @Composable
 fun SearchScreen(navController: NavController, tourManager: TourManager) {
     val trips = tourManager.trips.value
+    val cart = tourManager.cart.value
     val selectedTrip = tourManager.selectedTrip
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
@@ -111,7 +117,7 @@ fun SearchScreen(navController: NavController, tourManager: TourManager) {
                                 TripResultItem(trip = trip, onSelect = { selectedTrip ->
                                     tourManager.selectTrip(selectedTrip)
                                     scope.launch {
-                                        sheetState.expand()
+                                        sheetState.show()
                                     }
                                 })
                                 Spacer(modifier = Modifier.height(16.dp))
@@ -124,12 +130,20 @@ fun SearchScreen(navController: NavController, tourManager: TourManager) {
                 }
             }
         }
-        TripDetails(trip = selectedTrip.value, state = sheetState, onDismissRequest = {
-            tourManager.clearSelectedTrip()
-            scope.launch {
-                sheetState.hide()
+        TripDetails(trip = selectedTrip.value, state = sheetState,
+            onDismissRequest = {
+                tourManager.clearSelectedTrip()
+                scope.launch {
+                    sheetState.hide()
+                }
+            },
+            onAddToCart = {
+                scope.launch {
+                    sheetState.hide()
+                    tourManager.addCurrentTripToCart()
+                }
             }
-        })
+        )
 
     }
 }
@@ -531,11 +545,247 @@ fun TripItemPreview() {
 fun TripDetails(
     trip: TripData?,
     state: SheetState,
-    onDismissRequest: () -> Unit = {}
+    onDismissRequest: () -> Unit = {},
+    onAddToCart: () -> Unit = {},
 ) {
     if (trip != null) {
-        ModalBottomSheet(onDismissRequest = { onDismissRequest() }, sheetState = state) {
-            Text(text = trip._id)
+        ModalBottomSheet(
+            onDismissRequest = { onDismissRequest() },
+            sheetState = state,
+            modifier = Modifier.fillMaxHeight(0.8f)
+        ) {
+            BoxWithConstraints(Modifier.fillMaxSize()) {
+                ConstraintLayout(
+                    tripDetailsConstraint(),
+                    Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Text(
+                        text = trip._id,
+                        modifier = Modifier.layoutId("lineName"),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = trip.operator,
+                        modifier = Modifier.layoutId("operator"),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Light
+                    )
+                    Text(
+                        text = "Trip Details",
+                        modifier = Modifier.layoutId("lineDetailsTitle"),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "21/11/1998",
+                        modifier = Modifier.layoutId("tripDate"),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Light
+                    )
+                    Text(
+                        "09:18",
+                        modifier = Modifier.layoutId("departureTime"),
+                        textAlign = TextAlign.Center,
+
+                        )
+                    Text(
+                        "09:19",
+                        modifier = Modifier.layoutId("arrivalTime"),
+                        textAlign = TextAlign.Center,
+
+                        )
+                    Text(
+                        trip.points.first().name,
+                        modifier = Modifier
+                            .layoutId("departureLocation")
+                            .padding(start = 8.dp),
+                        maxLines = 2
+                    )
+                    Text(
+                        trip.points.last().name,
+                        modifier = Modifier
+                            .layoutId("arrivalLocation")
+                            .padding(start = 8.dp),
+                        maxLines = 2
+                    )
+                    Canvas(
+                        modifier = Modifier
+                            .layoutId("tripLine"),
+                        onDraw = {
+                            drawCircle(
+                                radius = (size.width * 0.9f) / 2,
+                                center = Offset(
+                                    size.width / 2,
+                                    size.width / 2 + 10
+                                ),
+                                color = Color.Gray
+                            )
+                            drawLine(
+                                color = Color.Gray,
+                                start = Offset(
+                                    size.width / 2,
+                                    size.width / 2 + 10
+                                ),
+                                end = Offset(
+                                    size.width / 2,
+                                    (size.height - size.width / 2) - 10
+                                ),
+                                strokeWidth = 10f
+                            )
+
+                            drawCircle(
+                                radius = (size.width * 0.9f) / 2,
+                                center = Offset(
+                                    size.width / 2,
+                                    (size.height - size.width / 2) - 10
+                                ),
+                                color = Color.Gray
+                            )
+                        }
+                    )
+
+                    Text(
+                        text = "Features", modifier = Modifier.layoutId("featuresTitle"),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Row(modifier = Modifier.layoutId("features")) {
+                        trip.features.forEach { feature ->
+                            Card(modifier = Modifier.clip(shape = RoundedCornerShape(10.dp))) {
+                                Text(text = feature)
+                            }
+                        }
+                    }
+
+                    Text(
+                        text = "1000000€",
+                        modifier = Modifier.layoutId("price"),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Button(
+                        onClick = { onAddToCart() },
+                        modifier = Modifier.layoutId("addToCartButton")
+                    ) {
+                        Text(text = "Add to Cart")
+                    }
+                }
+            }
         }
     }
+}
+
+fun tripDetailsConstraint(margin: Dp = 16.dp) = ConstraintSet {
+    val lineName = createRefFor("lineName")
+    val operator = createRefFor("operator")
+    val lineDetailsTitle = createRefFor("lineDetailsTitle")
+    val date = createRefFor("tripDate")
+    val departureLocation = createRefFor("departureLocation")
+    val departureTime = createRefFor("departureTime")
+    val arrivalLocation = createRefFor("arrivalLocation")
+    val arrivalTime = createRefFor("arrivalTime")
+    val tripLine = createRefFor("tripLine")
+    val featuresTitle = createRefFor("featuresTitle")
+    val features = createRefFor("features")
+    val price = createRefFor("price")
+    val addToCartButton = createRefFor("addToCartButton")
+
+    val topChain = createHorizontalChain(
+        departureTime,
+        tripLine,
+        departureLocation,
+        chainStyle = ChainStyle.Spread
+    )
+
+
+    constrain(lineName) {
+        top.linkTo(parent.top)
+        start.linkTo(parent.start)
+        end.linkTo(parent.end)
+        width = Dimension.fillToConstraints
+    }
+
+    constrain(operator) {
+        top.linkTo(lineName.bottom)
+        start.linkTo(parent.start)
+        end.linkTo(parent.end)
+        width = Dimension.fillToConstraints
+    }
+    constrain(lineDetailsTitle) {
+        top.linkTo(operator.bottom, margin * 2)
+        start.linkTo(parent.start)
+        end.linkTo(parent.end)
+        width = Dimension.fillToConstraints
+    }
+
+    constrain(date) {
+        top.linkTo(lineDetailsTitle.bottom)
+        start.linkTo(parent.start)
+        end.linkTo(parent.end)
+        width = Dimension.fillToConstraints
+    }
+
+    constrain(departureTime) {
+        top.linkTo(date.bottom, margin)
+        start.linkTo(parent.start)
+        width = Dimension.fillToConstraints
+        horizontalChainWeight = .2f
+    }
+    constrain(tripLine) {
+        top.linkTo(departureTime.top)
+        start.linkTo(departureTime.end)
+        bottom.linkTo(arrivalLocation.bottom)
+        height = Dimension.fillToConstraints
+        width = Dimension.fillToConstraints
+        horizontalChainWeight = .05f
+    }
+    constrain(departureLocation) {
+        top.linkTo(departureTime.top)
+        start.linkTo(tripLine.end)
+        end.linkTo(parent.end)
+        width = Dimension.fillToConstraints
+        horizontalChainWeight = .75f
+    }
+    constrain(arrivalLocation) {
+        end.linkTo(parent.end)
+        top.linkTo(departureLocation.bottom, margin)
+        start.linkTo(departureLocation.start)
+        width = Dimension.fillToConstraints
+
+    }
+
+    constrain(arrivalTime) {
+        start.linkTo(departureTime.start)
+        end.linkTo(departureTime.end)
+        bottom.linkTo(tripLine.bottom)
+        width = Dimension.fillToConstraints
+    }
+    constrain(featuresTitle) {
+        top.linkTo(arrivalTime.bottom, margin * 2)
+        start.linkTo(parent.start)
+        end.linkTo(parent.end)
+        width = Dimension.fillToConstraints
+    }
+    constrain(features) {
+        top.linkTo(featuresTitle.bottom, margin)
+        start.linkTo(parent.start)
+        end.linkTo(parent.end)
+        width = Dimension.fillToConstraints
+    }
+
+    constrain(price) {
+        end.linkTo(parent.end)
+        top.linkTo(features.bottom, margin)
+    }
+
+    constrain(addToCartButton) {
+        end.linkTo(parent.end)
+        top.linkTo(price.bottom, margin / 2)
+    }
+
+
 }
