@@ -15,7 +15,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +45,7 @@ import com.example.busapp.networking.TourManager
 fun CartScreen(navController: NavController, tourManager: TourManager) {
 
     val cart = tourManager.cart.value
+    val totalToPay = cart.sumOf { it.price }
     Scaffold(topBar = {
         Row(
             Modifier
@@ -67,6 +71,12 @@ fun CartScreen(navController: NavController, tourManager: TourManager) {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.DarkGray)
             }
+        }
+    }, floatingActionButtonPosition = FabPosition.Center, floatingActionButton = {
+        ElevatedButton(onClick = {
+            tourManager.clearCart()
+        }) {
+            Text(text = "Pay $totalToPay", fontWeight = FontWeight.Bold, fontSize = 30.sp)
         }
     }
     ) { p ->

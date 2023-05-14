@@ -40,12 +40,14 @@ class TourManager {
             _selectedTrip
         }
 
-    fun selectTrip(tripData: TripData){
+    fun selectTrip(tripData: TripData) {
         _selectedTrip.value = tripData
     }
-    fun clearSelectedTrip(){
+
+    fun clearSelectedTrip() {
         _selectedTrip.value = null
     }
+
     fun searchTrips(newSearchData: SearchData) {
         _trips.value = Resource.Loading()
         _searchData.value = newSearchData
@@ -74,8 +76,8 @@ class TourManager {
         })
     }
 
-    fun addCurrentTripToCart(){
-        if (_selectedTrip.value != null){
+    fun addCurrentTripToCart() {
+        if (_selectedTrip.value != null) {
             val result = mutableListOf<TripData>()
             result.addAll(_cart.value)
             result.add(_selectedTrip.value!!.copy(quantity = _searchData.value.quantity))
@@ -84,7 +86,13 @@ class TourManager {
         }
     }
 
-    fun removeTripFromCart(i:Int){
+    fun removeTripFromCart(i: Int) {
+        val list = _cart.value as MutableList
+        list.removeAt(i)
+        _cart.value = list
+    }
 
+    fun clearCart(){
+        _cart.value = emptyList()
     }
 }
