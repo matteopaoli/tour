@@ -82,6 +82,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.core.graphics.createBitmap
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.busapp.components.TripRoute
 import com.example.busapp.models.Coordinates
 import com.example.busapp.models.Point
 import com.example.busapp.models.SearchData
@@ -116,8 +117,9 @@ fun SearchScreen(navController: NavController, tourManager: TourManager) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Spacer(modifier = Modifier.fillMaxHeight().aspectRatio(1f))
-
+                Spacer(modifier = Modifier
+                    .fillMaxHeight()
+                    .aspectRatio(1f))
                 Text(
                     text = "Bus App",
                     modifier = Modifier.weight(1f),
@@ -409,8 +411,6 @@ private fun searchFormConstraint(margin: Dp = 16.dp) = ConstraintSet {
         start.linkTo(departureLocation.start)
         width = Dimension.fillToConstraints
         end.linkTo(middleGuideline, margin / 2)
-
-
     }
 
     constrain(returnDate) {
@@ -464,65 +464,7 @@ fun TripResultItem(trip: TripData, onSelect: (TripData) -> Unit = {}) {
                     modifier = Modifier.layoutId("operator"),
                     fontWeight = FontWeight.Light,
                 )
-                Text(
-                    "09:18",
-                    modifier = Modifier.layoutId("departureTime"),
-                    textAlign = TextAlign.End,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    "09:19",
-                    modifier = Modifier.layoutId("arrivalTime"),
-                    textAlign = TextAlign.End,
-                    fontWeight = FontWeight.Bold
-
-                )
-                Text(
-                    trip.points.first().name,
-                    modifier = Modifier.layoutId("departureLocation"),
-                    maxLines = 2
-                )
-                Text(
-                    trip.points.last().name,
-                    modifier = Modifier
-                        .layoutId("arrivalLocation"),
-                    maxLines = 2
-                )
-                Canvas(
-                    modifier = Modifier
-                        .layoutId("tripLine"),
-                    onDraw = {
-                        drawCircle(
-                            radius = (size.width * 0.9f) / 2,
-                            center = Offset(
-                                size.width / 2,
-                                size.width / 2 + 10
-                            ),
-                            color = Color.Gray
-                        )
-                        drawLine(
-                            color = Color.Gray,
-                            start = Offset(
-                                size.width / 2,
-                                size.width / 2 + 10
-                            ),
-                            end = Offset(
-                                size.width / 2,
-                                (size.height - size.width / 2) - 10
-                            ),
-                            strokeWidth = 10f
-                        )
-
-                        drawCircle(
-                            radius = (size.width * 0.9f) / 2,
-                            center = Offset(
-                                size.width / 2,
-                                (size.height - size.width / 2) - 10
-                            ),
-                            color = Color.Gray
-                        )
-                    }
-                )
+                TripRoute(trip, Modifier.layoutId("tripRoute"))
                 Text(trip.price.toString(), modifier = Modifier.layoutId("price"), fontSize = 24.sp)
             }
         }
@@ -532,19 +474,8 @@ fun TripResultItem(trip: TripData, onSelect: (TripData) -> Unit = {}) {
 private fun tripResultItemConstraint(margin: Dp = 16.dp) = ConstraintSet {
     val lineName = createRefFor("lineName")
     val operator = createRefFor("operator")
-    val departureLocation = createRefFor("departureLocation")
-    val departureTime = createRefFor("departureTime")
-    val arrivalLocation = createRefFor("arrivalLocation")
-    val arrivalTime = createRefFor("arrivalTime")
-    val tripLine = createRefFor("tripLine")
+    val tripRoute = createRefFor("tripRoute")
     val price = createRefFor("price")
-
-    val topChain = createHorizontalChain(
-        departureTime,
-        tripLine,
-        departureLocation,
-        chainStyle = ChainStyle.Spread
-    )
 
     constrain(lineName) {
         top.linkTo(parent.top)
@@ -554,45 +485,14 @@ private fun tripResultItemConstraint(margin: Dp = 16.dp) = ConstraintSet {
         top.linkTo(lineName.bottom)
         start.linkTo(parent.start)
     }
-    constrain(departureTime) {
-        top.linkTo(operator.bottom, margin * 2)
+    constrain(tripRoute){
+        top.linkTo(operator.bottom, margin)
         start.linkTo(parent.start)
-        width = Dimension.fillToConstraints
-        horizontalChainWeight = .2f
-    }
-    constrain(tripLine) {
-        top.linkTo(departureTime.top)
-        start.linkTo(departureTime.end, margin / 2)
-        bottom.linkTo(arrivalLocation.bottom)
-        height = Dimension.fillToConstraints
-        width = Dimension.fillToConstraints
-        horizontalChainWeight = .05f
-    }
-    constrain(departureLocation) {
-        top.linkTo(departureTime.top)
-        start.linkTo(tripLine.end, margin / 2)
         end.linkTo(parent.end)
         width = Dimension.fillToConstraints
-        horizontalChainWeight = .75f
     }
-    constrain(arrivalLocation) {
-        end.linkTo(parent.end)
-        top.linkTo(departureLocation.bottom, margin)
-        start.linkTo(departureLocation.start)
-        width = Dimension.fillToConstraints
-
-    }
-
-    constrain(arrivalTime) {
-        start.linkTo(departureTime.start)
-        end.linkTo(departureTime.end)
-        bottom.linkTo(tripLine.bottom)
-        width = Dimension.fillToConstraints
-
-    }
-
     constrain(price) {
-        top.linkTo(arrivalLocation.bottom, margin * 2)
+        top.linkTo(tripRoute.bottom, margin * 2)
         end.linkTo(parent.end)
         bottom.linkTo(parent.bottom)
     }
@@ -603,16 +503,7 @@ private fun tripResultItemConstraint(margin: Dp = 16.dp) = ConstraintSet {
 fun TripItemPreview() {
     Card(modifier = Modifier.height(200.dp)) {
         TripResultItem(
-            trip = TripData(
-                _id = "123123123123",
-                operator = "Paoli Airlines",
-                dateEnd = "",
-                dateStart = "",
-                points = listOf(Point(Coordinates(0.0, 0.0), "Airport", "")),
-                features = listOf(""),
-                price = 1000,
-                seatsAvailable = 12
-            )
+            trip = TripData.default
         )
     }
 }
@@ -662,68 +553,8 @@ fun TripDetails(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Light
                     )
-                    Text(
-                        "09:18",
-                        modifier = Modifier.layoutId("departureTime"),
-                        textAlign = TextAlign.Center,
 
-                        )
-                    Text(
-                        "09:19",
-                        modifier = Modifier.layoutId("arrivalTime"),
-                        textAlign = TextAlign.Center,
-
-                        )
-                    Text(
-                        trip.points.first().name,
-                        modifier = Modifier
-                            .layoutId("departureLocation")
-                            .padding(start = 8.dp),
-                        maxLines = 2
-                    )
-                    Text(
-                        trip.points.last().name,
-                        modifier = Modifier
-                            .layoutId("arrivalLocation")
-                            .padding(start = 8.dp),
-                        maxLines = 2
-                    )
-                    Canvas(
-                        modifier = Modifier
-                            .layoutId("tripLine"),
-                        onDraw = {
-                            drawCircle(
-                                radius = (size.width * 0.9f) / 2,
-                                center = Offset(
-                                    size.width / 2,
-                                    size.width / 2 + 10
-                                ),
-                                color = Color.Gray
-                            )
-                            drawLine(
-                                color = Color.Gray,
-                                start = Offset(
-                                    size.width / 2,
-                                    size.width / 2 + 10
-                                ),
-                                end = Offset(
-                                    size.width / 2,
-                                    (size.height - size.width / 2) - 10
-                                ),
-                                strokeWidth = 10f
-                            )
-
-                            drawCircle(
-                                radius = (size.width * 0.9f) / 2,
-                                center = Offset(
-                                    size.width / 2,
-                                    (size.height - size.width / 2) - 10
-                                ),
-                                color = Color.Gray
-                            )
-                        }
-                    )
-
+                    TripRoute(trip, modifier = Modifier.layoutId("tripRoute"))
                     Text(
                         text = "Features", modifier = Modifier.layoutId("featuresTitle"),
                         fontSize = 18.sp,
@@ -761,22 +592,12 @@ fun tripDetailsConstraint(margin: Dp = 16.dp) = ConstraintSet {
     val operator = createRefFor("operator")
     val lineDetailsTitle = createRefFor("lineDetailsTitle")
     val date = createRefFor("tripDate")
-    val departureLocation = createRefFor("departureLocation")
-    val departureTime = createRefFor("departureTime")
-    val arrivalLocation = createRefFor("arrivalLocation")
-    val arrivalTime = createRefFor("arrivalTime")
-    val tripLine = createRefFor("tripLine")
+    val tripRoute = createRefFor("tripRoute")
     val featuresTitle = createRefFor("featuresTitle")
     val features = createRefFor("features")
     val price = createRefFor("price")
     val addToCartButton = createRefFor("addToCartButton")
 
-    val topChain = createHorizontalChain(
-        departureTime,
-        tripLine,
-        departureLocation,
-        chainStyle = ChainStyle.Spread
-    )
 
 
     constrain(lineName) {
@@ -806,43 +627,13 @@ fun tripDetailsConstraint(margin: Dp = 16.dp) = ConstraintSet {
         width = Dimension.fillToConstraints
     }
 
-    constrain(departureTime) {
+    constrain(tripRoute){
         top.linkTo(date.bottom, margin)
         start.linkTo(parent.start)
-        width = Dimension.fillToConstraints
-        horizontalChainWeight = .2f
-    }
-    constrain(tripLine) {
-        top.linkTo(departureTime.top)
-        start.linkTo(departureTime.end)
-        bottom.linkTo(arrivalLocation.bottom)
-        height = Dimension.fillToConstraints
-        width = Dimension.fillToConstraints
-        horizontalChainWeight = .05f
-    }
-    constrain(departureLocation) {
-        top.linkTo(departureTime.top)
-        start.linkTo(tripLine.end)
         end.linkTo(parent.end)
-        width = Dimension.fillToConstraints
-        horizontalChainWeight = .75f
-    }
-    constrain(arrivalLocation) {
-        end.linkTo(parent.end)
-        top.linkTo(departureLocation.bottom, margin)
-        start.linkTo(departureLocation.start)
-        width = Dimension.fillToConstraints
-
-    }
-
-    constrain(arrivalTime) {
-        start.linkTo(departureTime.start)
-        end.linkTo(departureTime.end)
-        bottom.linkTo(tripLine.bottom)
-        width = Dimension.fillToConstraints
     }
     constrain(featuresTitle) {
-        top.linkTo(arrivalTime.bottom, margin * 2)
+        top.linkTo(tripRoute.bottom, margin * 2)
         start.linkTo(parent.start)
         end.linkTo(parent.end)
         width = Dimension.fillToConstraints
