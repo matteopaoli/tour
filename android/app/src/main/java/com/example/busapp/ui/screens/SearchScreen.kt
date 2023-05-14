@@ -4,6 +4,7 @@ package com.example.busapp.ui.screens
 
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
+import android.icu.text.CaseMap.Title
 import android.util.Log
 import android.widget.Space
 import androidx.compose.foundation.Canvas
@@ -11,26 +12,31 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +47,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,6 +56,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -72,6 +81,7 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.graphics.createBitmap
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.busapp.models.Coordinates
 import com.example.busapp.models.Point
 import com.example.busapp.models.SearchData
@@ -91,12 +101,71 @@ fun SearchScreen(navController: NavController, tourManager: TourManager) {
     val cart = tourManager.cart.value
     val selectedTrip = tourManager.selectedTrip
     val scope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState()
-    Scaffold() { p ->
-        p
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+
+    Scaffold(
+        topBar = {
+            Row(
+                Modifier
+                    .background(MaterialTheme.colorScheme.primary)
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(modifier = Modifier.fillMaxHeight().aspectRatio(1f))
+
+                Text(
+                    text = "Bus App",
+                    modifier = Modifier.weight(1f),
+                    fontSize = 22.sp,
+                    textAlign = TextAlign.Center,
+                    color = Color.DarkGray
+                )
+                Box(
+                    Modifier
+                        .fillMaxHeight()
+                        .aspectRatio(1f)
+                        .clickable {
+                            navController.navigate("cart")
+                        }
+                ) {
+                    Icon(
+                        Icons.Default.ShoppingCart,
+                        contentDescription = "Cart",
+                        tint = Color.DarkGray,
+                        modifier = Modifier.align(
+                            Alignment.Center
+                        )
+                    )
+                    if (cart.size > 0) {
+                        Text(
+                            text = cart.size.toString(),
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .size(20.dp)
+                                .aspectRatio(1f)
+                                .clip(
+                                    CircleShape
+                                )
+                                .background(Color.DarkGray),
+                            textAlign = TextAlign.Center
+                        )
+
+                    }
+
+                }
+            }
+        }
+    ) { p ->
+        val top = p.calculateTopPadding() + 16.dp
         LazyColumn(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(start = 16.dp, end = 16.dp, top = top, bottom = 16.dp)
                 .fillMaxSize()
         ) {
             item {
@@ -146,6 +215,13 @@ fun SearchScreen(navController: NavController, tourManager: TourManager) {
         )
 
     }
+}
+
+@Preview
+@Composable
+fun SearchScreenPreview(
+) {
+    SearchScreen(rememberNavController(), TourManager())
 }
 
 @Composable
@@ -222,6 +298,7 @@ fun SearchForm(tourManager: TourManager) {
                     onValueChange = {},
                     label = { Text(text = "Return Date") })
             } else {
+
                 OutlinedTextField(
                     value = searchData.returnDateString,
                     readOnly = true,
