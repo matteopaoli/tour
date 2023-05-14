@@ -326,14 +326,17 @@ fun SearchForm(tourManager: TourManager) {
                     label = { Text(text = "Return Date") })
             }
             OutlinedTextField(
-                value = searchData.quantity.toString(),
+                value = if (searchData.quantity > 0) searchData.quantity.toString() else "",
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp)
                     .layoutId("quantity"),
                 onValueChange = { v ->
-                    searchData = searchData.copy(quantity = v.toInt())
+                    searchData = if (v != "")
+                        searchData.copy(quantity = v.toInt())
+                    else
+                        searchData.copy(quantity = 0)
                 },
                 label = { Text(text = "Departure date") })
             Button(

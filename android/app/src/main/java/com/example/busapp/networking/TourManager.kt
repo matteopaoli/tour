@@ -78,7 +78,7 @@ class TourManager {
         if (_selectedTrip.value != null){
             val result = mutableListOf<TripData>()
             result.addAll(_cart.value)
-            result.add(_selectedTrip.value!!)
+            result.add(_selectedTrip.value!!.copy(quantity = _searchData.value.quantity))
             _cart.value = result.toList()
             _selectedTrip.value = null
         }
