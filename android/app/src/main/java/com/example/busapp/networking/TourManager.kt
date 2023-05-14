@@ -37,6 +37,9 @@ class TourManager {
     fun selectTrip(tripData: TripData){
         _selectedTrip.value = tripData
     }
+    fun clearSelectedTrip(){
+        _selectedTrip.value = null
+    }
     fun searchTrips(newSearchData: SearchData) {
         _trips.value = Resource.Loading()
         _searchData.value = newSearchData

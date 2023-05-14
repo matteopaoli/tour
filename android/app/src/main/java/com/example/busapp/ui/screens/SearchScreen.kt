@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@file:OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 
 package com.example.busapp.ui.screens
 
@@ -32,23 +32,29 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,11 +67,14 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.graphics.createBitmap
 import androidx.navigation.NavController
+import com.example.busapp.models.Coordinates
+import com.example.busapp.models.Point
 import com.example.busapp.models.SearchData
 import com.example.busapp.models.TripData
 import com.example.busapp.networking.Resource
 import com.example.busapp.networking.TourManager
 import com.marosseleng.compose.material3.datetimepickers.date.ui.dialog.DatePickerDialog
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.jvm.internal.impl.types.model.TypeSystemInferenceExtensionContext
@@ -74,6 +83,9 @@ import kotlin.reflect.jvm.internal.impl.types.model.TypeSystemInferenceExtension
 @Composable
 fun SearchScreen(navController: NavController, tourManager: TourManager) {
     val trips = tourManager.trips.value
+    val selectedTrip = tourManager.selectedTrip
+    val scope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState()
     Scaffold() { p ->
         p
         LazyColumn(
@@ -96,7 +108,12 @@ fun SearchScreen(navController: NavController, tourManager: TourManager) {
                     is Resource.Success -> {
                         if (trips.data != null) {
                             items(trips.data) { trip ->
-                                TripResultItem(trip = trip)
+                                TripResultItem(trip = trip, onSelect = { selectedTrip ->
+                                    tourManager.selectTrip(selectedTrip)
+                                    scope.launch {
+                                        sheetState.expand()
+                                    }
+                                })
                                 Spacer(modifier = Modifier.height(16.dp))
                             }
                         }
@@ -107,6 +124,13 @@ fun SearchScreen(navController: NavController, tourManager: TourManager) {
                 }
             }
         }
+        TripDetails(trip = selectedTrip.value, state = sheetState, onDismissRequest = {
+            tourManager.clearSelectedTrip()
+            scope.launch {
+                sheetState.hide()
+            }
+        })
+
     }
 }
 
@@ -327,26 +351,40 @@ fun SearchFormPreview() {
 }
 
 @Composable
-fun TripResultItem(trip: TripData) {
-    Card(modifier = Modifier.fillMaxSize()) {
+fun TripResultItem(trip: TripData, onSelect: (TripData) -> Unit = {}) {
+    Card(modifier = Modifier
+        .fillMaxSize()
+        .clickable { onSelect(trip) }) {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             ConstraintLayout(
                 tripResultItemConstraint(),
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(8.dp)
+                    .padding(16.dp)
             ) {
-                Text(trip._id, modifier = Modifier.layoutId("lineName"))
-                Text(trip.operator, modifier = Modifier.layoutId("operator"))
+                Text(
+                    trip._id,
+                    modifier = Modifier.layoutId("lineName"),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+                Text(
+                    trip.operator,
+                    modifier = Modifier.layoutId("operator"),
+                    fontWeight = FontWeight.Light,
+                )
                 Text(
                     "09:18",
                     modifier = Modifier.layoutId("departureTime"),
-                    textAlign = TextAlign.End
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     "09:19",
                     modifier = Modifier.layoutId("arrivalTime"),
-                    textAlign = TextAlign.End
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.Bold
+
                 )
                 Text(
                     trip.points.first().name,
@@ -359,11 +397,42 @@ fun TripResultItem(trip: TripData) {
                         .layoutId("arrivalLocation"),
                     maxLines = 2
                 )
-                Box(
+                Canvas(
                     modifier = Modifier
-                        .layoutId("tripLine")
+                        .layoutId("tripLine"),
+                    onDraw = {
+                        drawCircle(
+                            radius = (size.width * 0.9f) / 2,
+                            center = Offset(
+                                size.width / 2,
+                                size.width / 2 + 10
+                            ),
+                            color = Color.Gray
+                        )
+                        drawLine(
+                            color = Color.Gray,
+                            start = Offset(
+                                size.width / 2,
+                                size.width / 2 + 10
+                            ),
+                            end = Offset(
+                                size.width / 2,
+                                (size.height - size.width / 2) - 10
+                            ),
+                            strokeWidth = 10f
+                        )
+
+                        drawCircle(
+                            radius = (size.width * 0.9f) / 2,
+                            center = Offset(
+                                size.width / 2,
+                                (size.height - size.width / 2) - 10
+                            ),
+                            color = Color.Gray
+                        )
+                    }
                 )
-                Text(trip.price.toString(), modifier = Modifier.layoutId("price"))
+                Text(trip.price.toString(), modifier = Modifier.layoutId("price"), fontSize = 24.sp)
             }
         }
     }
@@ -395,13 +464,13 @@ private fun tripResultItemConstraint(margin: Dp = 16.dp) = ConstraintSet {
         start.linkTo(parent.start)
     }
     constrain(departureTime) {
-        top.linkTo(operator.bottom, margin)
+        top.linkTo(operator.bottom, margin * 2)
         start.linkTo(parent.start)
         width = Dimension.fillToConstraints
         horizontalChainWeight = .2f
     }
     constrain(tripLine) {
-        top.linkTo(operator.bottom, margin)
+        top.linkTo(departureTime.top)
         start.linkTo(departureTime.end, margin / 2)
         bottom.linkTo(arrivalLocation.bottom)
         height = Dimension.fillToConstraints
@@ -409,7 +478,7 @@ private fun tripResultItemConstraint(margin: Dp = 16.dp) = ConstraintSet {
         horizontalChainWeight = .05f
     }
     constrain(departureLocation) {
-        top.linkTo(operator.bottom, margin)
+        top.linkTo(departureTime.top)
         start.linkTo(tripLine.end, margin / 2)
         end.linkTo(parent.end)
         width = Dimension.fillToConstraints
@@ -438,4 +507,35 @@ private fun tripResultItemConstraint(margin: Dp = 16.dp) = ConstraintSet {
     }
 }
 
+@Preview
+@Composable
+fun TripItemPreview() {
+    Card(modifier = Modifier.height(200.dp)) {
+        TripResultItem(
+            trip = TripData(
+                _id = "123123123123",
+                operator = "Paoli Airlines",
+                dateEnd = "",
+                dateStart = "",
+                points = listOf(Point(Coordinates(0.0, 0.0), "Airport", "")),
+                features = listOf(""),
+                price = 1000,
+                seatsAvailable = 12
+            )
+        )
+    }
+}
 
+
+@Composable
+fun TripDetails(
+    trip: TripData?,
+    state: SheetState,
+    onDismissRequest: () -> Unit = {}
+) {
+    if (trip != null) {
+        ModalBottomSheet(onDismissRequest = { onDismissRequest() }, sheetState = state) {
+            Text(text = trip._id)
+        }
+    }
+}
