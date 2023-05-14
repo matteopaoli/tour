@@ -1,9 +1,10 @@
 import { ObjectId } from "mongodb"
+import CartItem from "./cart-item"
 
 export default interface CartSession {
-  _id: string | ObjectId
+  _id?: string | ObjectId
   userId: string | ObjectId
-  total: number
+  items: CartItem[]
   createdAt: Date
   modifiedAt: Date
 }
